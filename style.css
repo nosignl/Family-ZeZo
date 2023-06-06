@@ -1,0 +1,103 @@
+html, body {
+    height: 100%;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     }
+   body {
+     margin: 0;
+     padding: 0;
+     background: url(photo/snike.jpeg) no-repeat center center fixed;
+     background-size: cover;
+  }
+  .discord{
+   justify-content: center;
+   display: inline-block;
+   margin-bottom: 200px;
+  }
+  .discord-logo{
+   width: 200px;
+   border-radius: 10px;
+   display: flex;
+   align-content: center;
+   cursor: pointer;
+   margin-bottom: 10px;
+   margin-top: 100px;
+   transition: 1s;
+  }
+  .discord-logo:hover{
+   opacity: 0.7;
+  }
+  .instagram{
+   margin-bottom: 200px;
+  }
+  .instagram-logo{
+   width: 200px;
+   border-radius: 10px;
+   transition: 1s;
+  }
+  .instagram-logo:hover{
+   opacity: 0.7;
+   
+  }
+  H1{
+   color: white;
+   margin-left: 40px;
+   font-family: 'Cairo', sans-serif;
+   animation: colorChange 5s linear infinite;
+   border-color: black;
+   border: 10px;
+  }
+  @keyframes colorChange {
+           0% {
+               color: red;
+           }
+           25% {
+               color: blue;
+           }
+           50% {
+               color: green;
+           }
+           75% {
+               color: orange;
+           }
+           100% {
+               color: purple;
+           }
+       }
+       .profile{
+         width: 200px;
+         border-radius: 100px;
+       }
+       .rotate-circle {
+         margin-top: 200px;
+   width: 200px;
+   height: 200px;
+   position: relative;
+   animation: rotate 6s linear infinite;
+}
+
+.rotate-circle img {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   border-radius: 50%;
+}
+
+@keyframes rotate {
+   0% {
+       transform: rotate(0deg);
+   }
+   100% {
+       transform: rotate(360deg);
+   }
+}
+p{
+ font-family: Arial, Helvetica, sans-serif;
+ font-weight: bold;
+ width: 180px;
+ color: white;
+ background-color:rgba(255, 0, 0, 0.425);
+ padding: 10px 10px 10px 10px;
+ border-radius: 10px;
+}
