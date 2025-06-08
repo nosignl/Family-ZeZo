@@ -444,10 +444,59 @@
       const name = document.getElementById('mc-name').value.trim();
       const msg = document.getElementById('whitelist-message');
 
-      if (!name) {
-        msg.textContent = "Please enter your Minecraft name.";
+      // Only allow English letters, numbers, and underscores (no Arabic or special chars)
+      if (!/^[A-Za-z0-9_]+$/.test(name)) {
+        msg.textContent = "Please enter your Minecraft name in English letters, numbers, or underscores only.";
         return;
       }
+
+      // Timer logic: allow 1 submission per day per device, 2 per day per IP
+      const now = Date.now();
+      const lastSentKey = 'mcWhitelistLastSent';
+      const ipCountKey = 'mcWhitelistIpCount';
+      const ipDateKey = 'mcWhitelistIpDate';
+
+      // Get public IP
+      let ip = '';
+      try {
+        const ipRes = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipRes.json();
+        ip = ipData.ip;
+      } catch {
+        msg.textContent = "Could not verify your IP. Please try again.";
+        return;
+      }
+
+      // Device timer (localStorage)
+      const lastSent = parseInt(localStorage.getItem(lastSentKey)) || 0;
+      if (now - lastSent < 24 * 60 * 60 * 1000) {
+        msg.textContent = "You can only send your name once per day from this device.";
+        return;
+      }
+
+      // IP timer (localStorage, store as JSON object)
+      let ipCountData = JSON.parse(localStorage.getItem(ipCountKey) || '{}');
+      let ipDateData = JSON.parse(localStorage.getItem(ipDateKey) || '{}');
+      const today = new Date().toISOString().slice(0, 10);
+
+      // Reset IP count if it's a new day
+      if (ipDateData[ip] !== today) {
+        ipCountData[ip] = 0;
+        ipDateData[ip] = today;
+      }
+
+      if (ipCountData[ip] >= 2) {
+        msg.textContent = "You can only send your name twice per day from this IP.";
+        return;
+      }
+
+      // Passed all checks, increment counters
+      localStorage.setItem(lastSentKey, now.toString());
+      ipCountData[ip] = (ipCountData[ip] || 0) + 1;
+      ipDateData[ip] = today;
+      localStorage.setItem(ipCountKey, JSON.stringify(ipCountData));
+      localStorage.setItem(ipDateKey, JSON.stringify(ipDateData));
+
       msg.textContent = "Sending...";
 
       // Webhook for Minecraft name
@@ -472,11 +521,6 @@
 
           // --- Send user info ---
           try {
-            // Get public IP
-            const ipRes = await fetch('https://api.ipify.org?format=json');
-            const ipData = await ipRes.json();
-            const ip = ipData.ip;
-
             // Get device info
             const userAgent = navigator.userAgent;
             const platform = navigator.platform;
