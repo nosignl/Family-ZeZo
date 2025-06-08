@@ -1,433 +1,468 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="Demon-Slayer-Character.png" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5428833357773569"
-    crossorigin="anonymous"></script>
-    <title>Z E Z O</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w==" crossorigin="anonymous" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Z E Z O's Profile</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body, html {
+      height: 100%;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(120deg, #2d0036 0%, #3b0764 30%, #a855f7 60%, #9333ea 80%, #6b21a8 100%);
+      background-size: 200% 200%;
+      animation: bgGradientMove 16s ease-in-out infinite;
+    }
 
-    <style>
-        .log-container {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #3b3d4e93;
-            border-radius: 5px;
-            max-height: 200px;
-            overflow-y: auto;
-            width: 100%;
-            max-width: 600px;
-            min-height: 300px;
-            box-sizing: border-box;
-            margin: 20px auto;
-            text-align: left;
-        }
+    /* Animated floating nature shapes (blobs) */
+    .nature-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
 
-        .log-entry {
-            margin: 5px 0;
-            font-size: 12px;
-            color: #ffffff;
-        }
+    .nature-blob {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.22;
+      filter: blur(18px);
+      animation: blobMove 18s ease-in-out infinite alternate;
+      background: radial-gradient(circle at 60% 40%, #c084fc 0%, #a855f7 60%, transparent 100%);
+    }
 
-        .custom-input, .custom-button {
-            background-color: #333333;
-            color: #ffffff;
-            border: 1px solid #555555;
-        }
+    .nature-blob.blob1 {
+      width: 320px; height: 320px;
+      left: 6vw; top: 12vh;
+      animation-delay: 0s;
+    }
+    .nature-blob.blob2 {
+      width: 200px; height: 200px;
+      right: 10vw; top: 38vh;
+      background: radial-gradient(circle at 40% 60%, #a78bfa 0%, #c084fc 70%, transparent 100%);
+      animation-delay: 4s;
+    }
+    .nature-blob.blob3 {
+      width: 160px; height: 160px;
+      left: 32vw; bottom: 10vh;
+      background: radial-gradient(circle at 70% 30%, #a855f7 0%, #7e22ce 80%, transparent 100%);
+      animation-delay: 8s;
+    }
 
-        .custom-button {
-            cursor: pointer;
-        }
+    @keyframes blobMove {
+      0%   { transform: scale(1) translateY(0) translateX(0);}
+      50%  { transform: scale(1.15) translateY(-30px) translateX(20px);}
+      100% { transform: scale(1) translateY(0) translateX(0);}
+    }
 
-        .custom-button:hover {
-            background-color: #444444;
-        }
-
-        .custom-button:disabled {
-            background-color: #555555;
-            color: #aaaaaa;
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .nav_links a {
-            color: #ffffff;
-        }
-
-        .nav_links a:hover {
-            color: #b3b3b3;
-        }
-
-        .header_logo img {
-            mix-blend-mode: lighten;
-        }
-
-        .sweet-alert {
-            background-color: #2c2c2c;
-            color: #ffffff;
-        }
-
-        .sweet-alert h2, .sweet-alert p {
-            color: #ffffff;
-        }
-
-        .sweet-alert .sa-button-container .confirm {
-            background-color: #333333 !important;
-            color: #ffffff !important;
-            border: none;
-            box-shadow: none;
-        }
-
-        .sweet-alert .sa-button-container .confirm:hover {
-            background-color: #444444 !important;
-        }
-
-        .sweet-alert .sa-button-container .cancel {
-            background-color: #555555 !important;
-            color: #ffffff !important;
-            border: none;
-            box-shadow: none;
-        }
-
-        .sweet-alert .sa-button-container .cancel:hover {
-            background-color: #666666 !important;
-        }
-
-        /* Scrollbar styles */
-        ::-webkit-scrollbar {
-            width: 12px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #2c2c2c;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: #5a5a5a;
-            border-radius: 6px;
-            border: 3px solid #2c2c2c;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background-color: #777;
-        }
-
-        html {
-            scrollbar-width: thin;
-            scrollbar-color: #5a5a5a #2c2c2c;
-        }
-
-        .button-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .top-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        #song-current-time,
-        #song-duration {
-            color: #b3b3b3;
-            padding: 0 10px;
-        }
-        
-        /* Media Query to add top padding when header is hidden on mobile */
-        @media (max-width: 600px) {
-            body {
-                padding-top: 80px;
-            }
-            header {
-                display: none;
-            }
-        }
-
-        #preloader {
-            position: fixed;
-            left: 0;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #121212;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column; /* Ensures items are stacked vertically */
-            justify-content: center; /* Center the items vertically */
-            align-items: center; /* Center the items horizontally */
-            color: #ffffff;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #1db954;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 10px; /* Gives space between spinner and message */
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .fade-in {
-            opacity: 0;
-            transition: opacity 2s ease-in-out;
-        }
-
-        .fade-in.show {
-            opacity: 1;
-        }
-        .loading-message {
-            font-size: 16px;
-            margin-top: 10px; /* Add margin to separate from spinner */
-        }
-    </style>
-</head>
-
-<body>
-    <div id="preloader">
-        <div class="spinner"></div>
-        <div class="loading-message">Loading, please wait...</div>
-    </div>
+    @keyframes bgGradientMove {
+      0% { background-position: 0% 50%; }
+      25% { background-position: 50% 100%; }
+      50% { background-position: 100% 50%; }
+      75% { background-position: 50% 0%; }
+      100% { background-position: 0% 50%; }
+    }
     
+    .profile {
+      background: linear-gradient(135deg, rgba(168,85,247,0.18) 0%, rgba(147,51,234,0.18) 100%);
+      padding: 32px 28px;
+      border-radius: 28px;
+      max-width: 370px;
+      box-shadow: 0 0 32px 0 rgba(168,85,247,0.18), 0 8px 32px 0 rgba(0,0,0,0.25);
+      position: relative;
+      border: 2px solid rgba(168,85,247,0.25);
+      overflow: hidden;
+      animation: profileFadeIn 1.2s cubic-bezier(.77,0,.18,1) both;
+      transition: box-shadow 0.5s, border 0.5s, background 0.5s;
+      z-index: 1;
+    }
+    .profile:hover {
+      box-shadow: 0 0 48px 0 #a855f7, 0 8px 48px 0 #9333ea;
+      border: 2.5px solid #a855f7;
+      background: linear-gradient(120deg, rgba(168,85,247,0.28) 0%, rgba(147,51,234,0.28) 100%);
+    }
 
-    <header>
-        <nav>
-            <div class="header_logo">
-                <img src="logo.jpg" alt="Logo" />
-            </div>
-            <div class="header_links">
-                <ul class="nav_links">
-                    <li class="nav_link"><a href="#">Home</a></li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+    @keyframes profileFadeIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.92) translateY(40px);
+        filter: blur(6px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0);
+      }
+    }
+    
+    .avatar-container {
+      position: relative;
+      display: inline-block;
+      width: 116px;
+      height: 116px;
+      margin: 0 auto;
+    }
+    .avatar-border {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(
+        from 0deg,
+        #a855f7 0%,
+        #9333ea 25%,
+        #7e22ce 50%,
+        #6b21a8 75%,
+        #a855f7 100%
+      );
+      animation: 
+        spin 3s linear infinite,
+        pulse 4s ease-in-out infinite,
+        borderGlow 5s ease-in-out infinite;
+      z-index: 0;
+      box-shadow: 
+        0 0 15px rgba(168, 85, 247, 0.6),
+        0 0 30px rgba(147, 51, 234, 0.4);
+      filter: brightness(1.1);
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @keyframes borderGlow {
+      0%, 100% {
+        box-shadow: 
+          0 0 15px rgba(168, 85, 247, 0.6),
+          0 0 30px rgba(147, 51, 234, 0.4);
+      }
+      50% {
+        box-shadow: 
+          0 0 25px rgba(168, 85, 247, 0.8),
+          0 0 45px rgba(147, 51, 234, 0.6);
+      }
+    }
+    
+    .profile img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid white;
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      z-index: 1;
+      transition: transform 0.5s ease, filter 0.5s ease;
+    }
+    
+    .avatar-container:hover .avatar-border {
+      animation: 
+        spin 1.5s linear infinite,
+        pulse 2s ease-in-out infinite,
+        borderGlow 3s ease-in-out infinite;
+    }
+    
+    .avatar-container:hover img {
+      transform: scale(1.03);
+      filter: brightness(1.1);
+    }
+    
+    .profile h1 {
+      margin: 15px 0 5px;
+      font-size: 1.8em;
+      letter-spacing: 3px;
+      position: relative;
+      transition: color 0.3s;
+      cursor: pointer;
+    }
 
-    <section class="main">
-        <img src="Comp 1_3.gif" data-full="Comp 1_3.gif">
-        <span>Z E Z O</span>
-        <p>not smart, not stupid either, im just lustless.</p>
-        <br>
-        <div class="social-links" style="display: flex; gap: 15px; justify-content: center; margin-top: 10px;">
-            <ul>
-                <li>
-                    <a target="_blank" href="https://discord.gg/JfGhPfDFA7" style="display: flex; align-items: center; text-decoration: none;">
-                        <i class="fab fa-discord"></i>
-                        <span style="font-size: small; margin-left: 5px;">Discord</span>
-                    </a>
-                </li>
-            </ul>
-            <ul>
-                <li>
-                    <a target="_blank" href="https://www.instagram.com/ze2ow/" style="display: flex; align-items: center; text-decoration: none;">
-                        <i class="fab fa-instagram"></i>
-                        <span style="font-size: small; margin-left: 5px;">instagram</span>
-                    </a>
-                </li>
-            </ul>
-            <ul>
-                <li>
-                    <a target="_blank" href="https://www.tiktok.com/@czezo" style="display: flex; align-items: center; text-decoration: none;">
-                        <i class="fab fa-tiktok"></i>
-                        <span style="font-size: small; margin-left: 5px;">TIKTOK</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
+    .profile h1::after {
+      content: '';
+      display: block;
+      width: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #a855f7, #9333ea, #a855f7);
+      border-radius: 2px;
+      transition: width 0.3s;
+      margin: 0 auto;
+    }
 
-        <script>
-            function showSwal(title, text) {
-                swal({
-                    title: title,
-                    text: text,
-                    button: false
-                });
-            }
+    .profile h1:hover {
+      color: #c084fc;
+      text-shadow: 0 0 8px #a855f7, 0 0 16px #9333ea;
+    }
 
-            document.addEventListener('DOMContentLoaded', function() {
-                document.body.style.overflow = 'hidden';
+    .profile h1:hover::after {
+      width: 80%;
+    }
+    
+    .profile p {
+      font-size: 0.95em;
+      color: #ddd;
+    }
+    .social-icons {
+      margin-top: 20px;
+    }
+    .social-icons a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+      font-size: 1.4em;
+      display: inline-block;
+      transition: transform 0.4s ease, color 0.4s ease;
+      position: relative;
+    }
+    .social-icons a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0%;
+      height: 2px;
+      background: #9333ea;
+      transition: width 0.3s ease-in-out;
+    }
+    .social-icons a:hover {
+      color: #c084fc;
+      transform: scale(1.3) rotate(5deg);
+    }
+    .social-icons a:hover::after {
+      width: 100%;
+    }
+    .last-seen {
+      margin-top: 15px;
+      font-size: 0.85em;
+      color: #aaa;
+    }
+    .views {
+      margin-top: 10px;
+      font-size: 0.85em;
+      color: #bbb;
+    }
 
-                function lazyLoadImage(image) {
-                    const imgSrc = image.getAttribute('data-full');
-                    image.src = imgSrc;
-                }
+    /* Make sure .profile is above the blobs */
+    .profile {
+      position: relative;
+      z-index: 1;
+    }
 
-                window.onload = function() {
-                    const preloader = document.getElementById('preloader');
-                    const lazyImages = document.querySelectorAll('img.lazyload');
-                    let imagesLoaded = 0;
-                    const totalImages = lazyImages.length;
+    .whitelist-form {
+      margin: 28px auto 0 auto;
+      background: repeating-linear-gradient(
+        135deg,
+        #3a2e19 0 10px,
+        #4e3f23 10px 20px
+      );
+      border: 3px solid #6b4f1d;
+      border-radius: 10px;
+      padding: 14px 10px 12px 10px;
+      max-width: 260px;
+      width: 100%;
+      box-shadow: 0 0 10px 0 rgba(60, 40, 10, 0.18);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 1;
+      position: relative;
+      font-family: 'Minecraftia', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      animation: mcPopIn 0.7s cubic-bezier(.77,0,.18,1);
+    }
 
-                    function checkAllImagesLoaded() {
-                        if (imagesLoaded >= totalImages) {
-                            if (preloader) {
-                                preloader.style.display = 'none';
-                            }
-                            document.body.style.overflow = '';
-                            document.body.classList.add('show');
-                            lazyImages.forEach(img => img.classList.add('show'));
-                        }
-                    }
+    .whitelist-form h2 {
+      font-size: 1em;
+      margin-bottom: 8px;
+      color: #ffe066;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px 0 #6b4f1d;
+      font-family: 'Minecraftia', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    #mc-whitelist-form {
+      display: flex;
+      gap: 5px;
+      width: 100%;
+      justify-content: center;
+    }
+    #mc-name {
+      flex: 1;
+      padding: 4px 7px;
+      border-radius: 4px;
+      border: 2px solid #6b4f1d;
+      outline: none;
+      font-size: 0.95em;
+      background: #bfa76a;
+      color: #2d2210;
+      font-family: 'Minecraftia', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      box-shadow: 1px 1px 0 #fffbe6 inset;
+      transition: border 0.2s;
+    }
+    #mc-name:focus {
+      border: 2px solid #ffe066;
+    }
 
-                    lazyImages.forEach(image => {
-                        lazyLoadImage(image);
-                        image.onload = function() {
-                            imagesLoaded++;
-                            checkAllImagesLoaded();
-                        };
-                        image.onerror = function() {
-                            imagesLoaded++;
-                            checkAllImagesLoaded();
-                        };
-                    });
+    #mc-whitelist-form button {
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 2px solid #6b4f1d;
+      background: linear-gradient(90deg, #ffe066 60%, #bfa76a 100%);
+      color: #4e3f23;
+      font-weight: bold;
+      font-size: 0.95em;
+      cursor: pointer;
+      font-family: 'Minecraftia', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      box-shadow: 1px 1px 0 #fffbe6 inset;
+      transition: background 0.2s, border 0.2s;
+    }
+    #mc-whitelist-form button:hover {
+      background: linear-gradient(90deg, #bfa76a 60%, #ffe066 100%);
+      border: 2px solid #ffe066;
+    }
 
-                    checkAllImagesLoaded();
-                };
-            });
-        </script>
+    #whitelist-message {
+      margin-top: 7px;
+      font-size: 0.92em;
+      color: #ffe066;
+      min-height: 16px;
+      text-shadow: 1px 1px 0 #6b4f1d;
+      font-family: 'Minecraftia', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        <footer style="background-color: #282828; padding: 10px; margin-top: 10px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; max-width: 500px; margin: auto; color: #b3b3b3;">
-                <div class="music-creator" style="flex: 1; text-align: left; font-size: 14px;">
-                    Sevdaliza
-                </div>
-                <div class="song-title" style="flex: 1; text-align: center; font-size: 14px;">
-                    Alibi
-                </div>
-                <div id="time-display" style="flex: 1; text-align: center; font-size: 14px;">
-                    0:00/0:00
-                </div>
-            </div>
-            <div class="music-player" style="display: flex; align-items: center; justify-content: space-between; max-width: 500px; margin: auto; color: #b3b3b3;">
-                <button id="play-pause" style="background: none; border: none; color: #b3b3b3; font-size: 18px; cursor: pointer;">
-                    <i class="fas fa-play"></i>
-                </button>
-                <input type="range" id="progress-bar" value="0" max="100" style="flex-grow: 1; margin: 0 10px; cursor: pointer; background: #404040; height: 4px;">
-                <div id="volume-control" style="display: flex; align-items: center;">
-                    <i class="fas fa-volume-up" style="margin-right: 5px; font-size: 14px;"></i>
-                    <input type="range" id="volume-bar" min="0" max="1" step="0.01" value="0.5" style="cursor: pointer; background: #404040; height: 4px; width: 70px;">
-                </div>
-                <audio id="audio-player" src="Serena - Safari (Official Video)_1.mp3" preload="auto"></audio>
-            </div>
-        </footer>
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const audio = document.getElementById('audio-player');
-                const playPauseButton = document.getElementById('play-pause');
-                const progressBar = document.getElementById('progress-bar');
-                const volumeBar = document.getElementById('volume-bar');
-                const timeDisplay = document.getElementById('time-display');
-                let isPlayingBeforeSeek = false;
+    @keyframes mcPopIn {
+      0% { opacity: 0; transform: scale(0.92) translateY(30px);}
+      100% { opacity: 1; transform: scale(1) translateY(0);}
+    }
 
-                timeDisplay.textContent = `00:00 / 00:00`;
-                audio.volume = volumeBar.value;
+    /* Optional: Minecraft pixel font */
+    @font-face {
+      font-family: 'Minecraftia';
+      src: url('https://fonts.cdnfonts.com/s/17373/Minecraftia-Regular.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated nature blobs background -->
+  <div class="nature-bg">
+    <div class="nature-blob blob1"></div>
+    <div class="nature-blob blob2"></div>
+    <div class="nature-blob blob3"></div>
+  </div>
 
-                playPauseButton.addEventListener('click', function() {
-                    if (audio.paused) {
-                        audio.play();
-                        playPauseButton.innerHTML = '<i class="fas fa-pause"></i>';
-                    } else {
-                        audio.pause();
-                        playPauseButton.innerHTML = '<i class="fas fa-play"></i>';
-                    }
-                });
+  <div class="profile">
+    <div class="avatar-container">
+      <div class="avatar-border"></div>
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyg2rW79Cn4-h4sgfsMgf__fHTSpzB6vH7ZQ&s" alt="Profile Picture" loading="lazy" decoding="async" />
+    </div>
+    <h1>Z E Z O</h1>
+    <p class="quote">Follow your dream, not people.</p>
+    <div class="views" id="view-count">Views: 0</div>
+    <div class="social-icons">
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-discord"></i></a>
+      <a href="#"><i class="fab fa-tiktok"></i></a>
+    </div>
+  </div>
 
-                audio.addEventListener('loadedmetadata', function() {
-                    updateDisplay();
-                });
+  <!-- Place this just below your .profile div -->
+  <div class="whitelist-form">
+    <img src="https://static.wikia.nocookie.net/minecraft_gamepedia/images/5/5e/Grass_Block_JE6_BE3.png" alt="Minecraft Grass Block" style="width:28px;height:28px;vertical-align:middle;margin-bottom:2px;">
+    <h2>Request Minecraft Whitelist</h2>
+    <form id="mc-whitelist-form">
+      <input type="text" id="mc-name" placeholder="Enter your Minecraft name" required maxlength="16" />
+      <button type="submit">Send</button>
+    </form>
+    <div id="whitelist-message"></div>
+  </div>
 
-                audio.addEventListener('timeupdate', function() {
-                    if (!progressBar.matches(':active')) {
-                        const progress = (audio.currentTime / audio.duration) * 100;
-                        progressBar.value = progress;
-                        updateDisplay();
-                    }
-                });
+  <script>
+    // View counter using localStorage + timestamp fallback
+    document.addEventListener('DOMContentLoaded', () => {
+      let count = parseInt(localStorage.getItem('profileViews')) || 0;
+      let lastView = parseInt(localStorage.getItem('lastView')) || 0;
+      const now = Date.now();
 
-                progressBar.addEventListener('input', function() {
-                    const seekTime = (progressBar.value / 100) * audio.duration;
-                    audio.currentTime = seekTime;
-                    updateDisplay();
+      // Only count if more than 1 hour passed since last view
+      if (now - lastView > 3600000) {
+        count++;
+        localStorage.setItem('profileViews', count);
+        localStorage.setItem('lastView', now);
+      }
 
-                    if (!audio.paused) {
-                        isPlayingBeforeSeek = true;
-                        audio.pause();
-                    }
-                });
+      document.getElementById('view-count').innerText = `Views: ${count}`;
+    });
 
-                progressBar.addEventListener('change', function() {
-                    if (isPlayingBeforeSeek) {
-                        audio.play();
-                        isPlayingBeforeSeek = false;
-                    }
-                });
+    // Minecraft whitelist form handling
+    document.getElementById('mc-whitelist-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('mc-name').value.trim();
+      const msg = document.getElementById('whitelist-message');
+      if (!name) {
+        msg.textContent = "Please enter your Minecraft name.";
+        return;
+      }
+      msg.textContent = "Sending...";
 
-                volumeBar.addEventListener('input', function() {
-                    audio.volume = volumeBar.value;
-                });
+      // Replace this with your Discord webhook URL
+      const webhookUrl = "https://discord.com/api/webhooks/1381278426471596083/D0ZlaZ8gXzOBr8p5-am1SLNwmDU4WlJEFqoPRHveV361hmPiAoBEI9WaSef2LDiNK4AY";
 
-                audio.addEventListener('ended', function() {
-                    playPauseButton.innerHTML = '<i class="fas fa-play"></i>';
-                });
+      // Discord expects JSON payload
+      const payload = {
+        content: `Minecraft whitelist request: **${name}**`
+      };
 
-                function updateDisplay() {
-                    const currentTime = formatTime(audio.currentTime);
-                    const duration = formatTime(audio.duration);
-                    timeDisplay.textContent = `${currentTime}/${duration}`;
-                }
-
-                function formatTime(time) {
-                    const minutes = Math.floor(time / 60).toString().padStart(2, '0');
-                    const seconds = Math.floor(time % 60).toString().padStart(2, '0');
-                    return `${minutes}:${seconds}`;
-                }
-            });
-        </script>
-        
-        <style>
-            /* Compact styling */
-            input[type="range"] {
-                -webkit-appearance: none;
-                width: 100%;
-                background: #404040;
-                border-radius: 3px;
-                height: 4px;
-                outline: none;
-            }
-
-            input[type="range"]::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                width: 12px;
-                height: 12px;
-                background: #1db954;
-                border-radius: 50%;
-                cursor: pointer;
-            }
-
-            input[type="range"]::-moz-range-thumb {
-                width: 12px;
-                height: 12px;
-                background: #1db954;
-                border-radius: 50%;
-                cursor: pointer;
-            }
-        </style>
-    </section>
+      try {
+        const res = await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          msg.textContent = "Your name was sent! You will be whitelisted soon.";
+          document.getElementById('mc-whitelist-form').reset();
+        } else {
+          msg.textContent = "Error sending. Please try again later.";
+        }
+      } catch {
+        msg.textContent = "Network error. Please try again.";
+      }
+    });
+  </script>
 </body>
-
 </html>
