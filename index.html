@@ -78,7 +78,6 @@
       opacity: 0.2;
       filter: grayscale(1) blur(2px);
       box-shadow: none;
-      pointer-events: none;
     }
     #moon::after {
       content: '';
@@ -92,18 +91,7 @@
       filter: blur(2px);
     }
 
-    /* Remove or comment out the old gradient and pattern overlay if you want a clean photo background: */
-    /*
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0.12;
-      background-image: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
-    }
-    */
+  
 
     /* Animated floating nature shapes (blobs) */
     .nature-bg {
@@ -445,19 +433,6 @@
     .cloud-img3 { top: 11vh; left: 58vw; width: 280px; }
     .cloud-img4 { top: 18vh; left: 78vw; width: 220px; }
 
-    .real-ground {
-      position: fixed;
-      left: 0;
-      bottom: 0;
-      width: 100vw;
-      height: 160px;
-      z-index: 3;
-      pointer-events: none;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-    }
-
     .ground-img {
       width: 100vw;
       min-width: 100vw;
@@ -495,7 +470,7 @@
   <div class="profile">
     <div class="avatar-container">
       <div class="avatar-border"></div>
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyg2rW79Cn4-h4sgfsMgf__fHTSpzB6vH7ZQ&s" alt="Profile Picture" loading="lazy" decoding="async" />
+      <img src="https://i.ibb.co/mVDyZMTg/e3fbda5ef554577e5aa1e68d7fb2cda7.jpg" alt="Profile Picture" loading="lazy" decoding="async" />
     </div>
     <h1>Z E Z O</h1>
     <p class="quote">Follow your dream, not people.</p>
@@ -725,11 +700,18 @@ ${locationText}`
 
     // --- Moon shine and break logic ---
     const moon = document.getElementById('moon');
+    let moonLocked = false;
+
     moon.addEventListener('click', () => {
-      moon.classList.add('broken');
-      setTimeout(() => {
+      if (moonLocked) {
+        // Unlock moon, allow shine again
+        moonLocked = false;
         moon.classList.remove('broken');
-      }, 2000); // moon "repairs" after 2 seconds
+      } else {
+        // Lock moon, prevent shine until next click
+        moonLocked = true;
+        moon.classList.add('broken');
+      }
     });
   </script>
 </body>
