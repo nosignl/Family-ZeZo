@@ -20,49 +20,98 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      color: white;
+      color: #fff;
       text-align: center;
       position: relative;
       overflow: hidden;
-      background: linear-gradient(120deg, #2d0036 0%, #3b0764 30%, #a855f7 60%, #9333ea 80%, #6b21a8 100%);
-      background-size: 200% 200%;
-      animation: bgGradientMove 16s ease-in-out infinite;
+      background: linear-gradient(180deg, #181b2c 0%, #232946 100%);
     }
 
-    /* Animated floating nature shapes (blobs) */
-    .nature-bg {
+    /* Star styles */
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.85;
+      pointer-events: none;
+      z-index: 0;
+      animation: starFall linear;
+    }
+
+    @keyframes starFall {
+      0% {
+        opacity: 0.9;
+        transform: translateY(0) scale(1);
+      }
+      80% {
+        opacity: 1;
+        transform: translateY(90vh) scale(1.2);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(100vh) scale(0.7);
+      }
+    }
+
+    /* Moon styles */
+    #moon {
+      position: fixed;
+      top: 60px;
+      right: 80px;
+      width: 90px;
+      height: 90px;
+      background: radial-gradient(circle at 60% 40%, #fffbe7 70%, #f6e27a 100%, #e0c366 120%);
+      border-radius: 50%;
+      box-shadow: 0 0 60px 20px #fffbe7, 0 0 120px 40px #f6e27a;
+      z-index: 2;
+      transition: box-shadow 0.4s, filter 0.4s, opacity 0.7s;
+      cursor: pointer;
+      opacity: 1;
+    }
+    #moon.shine {
+      /* box-shadow: 0 0 120px 40px #fffbe7, 0 0 180px 80px #f6e27a, 0 0 240px 120px #fffbe7;
+      filter: brightness(1.3) drop-shadow(0 0 40px #fffbe7); */
+    }
+    #moon.broken {
+      opacity: 0.2;
+      filter: grayscale(1) blur(2px);
+      box-shadow: none;
+      pointer-events: none;
+    }
+    #moon::after {
+      content: '';
+      position: absolute;
+      left: 60%;
+      top: 30%;
+      width: 18px;
+      height: 18px;
+      background: rgba(255,255,255,0.18);
+      border-radius: 50%;
+      filter: blur(2px);
+    }
+
+    /* Remove or comment out the old gradient and pattern overlay if you want a clean photo background: */
+    /*
+    body::before {
+      content: "";
       position: fixed;
       inset: 0;
       z-index: 0;
       pointer-events: none;
-      overflow: hidden;
+      opacity: 0.12;
+      background-image: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+    }
+    */
+
+    /* Animated floating nature shapes (blobs) */
+    .nature-bg {
+      display: none !important;
     }
 
     .nature-blob {
-      position: absolute;
-      border-radius: 50%;
-      opacity: 0.22;
-      filter: blur(18px);
-      animation: blobMove 18s ease-in-out infinite alternate;
-      background: radial-gradient(circle at 60% 40%, #c084fc 0%, #a855f7 60%, transparent 100%);
-    }
-
-    .nature-blob.blob1 {
-      width: 320px; height: 320px;
-      left: 6vw; top: 12vh;
-      animation-delay: 0s;
-    }
-    .nature-blob.blob2 {
-      width: 200px; height: 200px;
-      right: 10vw; top: 38vh;
-      background: radial-gradient(circle at 40% 60%, #a78bfa 0%, #c084fc 70%, transparent 100%);
-      animation-delay: 4s;
-    }
-    .nature-blob.blob3 {
-      width: 160px; height: 160px;
-      left: 32vw; bottom: 10vh;
-      background: radial-gradient(circle at 70% 30%, #a855f7 0%, #7e22ce 80%, transparent 100%);
-      animation-delay: 8s;
+      display: none !important;
     }
 
     @keyframes blobMove {
@@ -73,9 +122,7 @@
 
     @keyframes bgGradientMove {
       0% { background-position: 0% 50%; }
-      25% { background-position: 50% 100%; }
       50% { background-position: 100% 50%; }
-      75% { background-position: 50% 0%; }
       100% { background-position: 0% 50%; }
     }
     
@@ -360,15 +407,90 @@
       font-weight: normal;
       font-style: normal;
     }
+
+    /* Place these right after <body> and before your main content */
+    #star-sky {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    #star-sky::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent url('data:image/svg+xml,%3Csvg ... %3C/svg%3E') no-repeat center center;
+      animation: twinkling 4s infinite linear;
+    }
+
+    .real-cloud {
+      position: fixed;
+      z-index: 2;
+      opacity: 0.85;
+      pointer-events: none;
+      filter: drop-shadow(0 4px 16px #0002);
+      animation: none !important;
+      transition: opacity 1s;
+    }
+
+    /* Group clouds close together and make them larger */
+    .cloud-img1 { top: 12vh; left: 10vw; width: 320px; }
+    .cloud-img2 { top: 15vh; left: 32vw; width: 340px; }
+    .cloud-img3 { top: 11vh; left: 58vw; width: 280px; }
+    .cloud-img4 { top: 18vh; left: 78vw; width: 220px; }
+
+    .real-ground {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100vw;
+      height: 160px;
+      z-index: 3;
+      pointer-events: none;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .ground-img {
+      width: 100vw;
+      min-width: 100vw;
+      height: 120px;
+      object-fit: cover;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      z-index: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .tree-img {
+      position: absolute;
+      left: 12vw;
+      bottom: 40px;
+      width: 120px;
+      height: auto;
+      z-index: 2;
+      pointer-events: none;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
-  <!-- Animated nature blobs background -->
-  <div class="nature-bg">
-    <div class="nature-blob blob1"></div>
-    <div class="nature-blob blob2"></div>
-    <div class="nature-blob blob3"></div>
-  </div>
+  <!-- Place these right after <body> and before your main content -->
+  <div id="star-sky"></div>
+  <img class="real-cloud cloud-img1" src="https://pngimg.com/uploads/cloud/cloud_PNG16.png" alt="cloud" />
+  <img class="real-cloud cloud-img2" src="https://pngimg.com/uploads/cloud/cloud_PNG19.png" alt="cloud" />
+  <img class="real-cloud cloud-img3" src="https://pngimg.com/uploads/cloud/cloud_PNG20.png" alt="cloud" />
+  <img class="real-cloud cloud-img4" src="https://pngimg.com/uploads/cloud/cloud_PNG22.png" alt="cloud" />
+  <div id="moon" title="Click me!"></div>
 
   <div class="profile">
     <div class="avatar-container">
@@ -377,7 +499,6 @@
     </div>
     <h1>Z E Z O</h1>
     <p class="quote">Follow your dream, not people.</p>
-    <div class="views" id="view-count">Views: 0</div>
     <div class="social-icons">
       <a href="https://instagram.com/ze2ow" target="_blank" rel="noopener" title="Instagram"><i class="fab fa-instagram"></i></a>
       <a href="https://discord.gg/JfGhPfDFA7" target="_blank" rel="noopener" title="Discord"><i class="fab fa-discord"></i></a>
@@ -417,27 +538,10 @@
     <i id="music-icon" class="fas fa-volume-up" style="color:#fff;font-size:1.3em;"></i>
   </button>
   <audio id="bg-music" loop>
-    <source src="https://cdn.pixabay.com/audio/2022/10/16/audio_12b5fae5e2.mp3" type="audio/mpeg">
+    <source src="https://s3.aconvert.com/convert/p3r68-cdx67/4avxi-rz633.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
-
   <script>
-    // View counter using localStorage + timestamp fallback
-    document.addEventListener('DOMContentLoaded', () => {
-      let count = parseInt(localStorage.getItem('profileViews')) || 0;
-      let lastView = parseInt(localStorage.getItem('lastView')) || 0;
-      const now = Date.now();
-
-      // Only count if more than 1 hour passed since last view
-      if (now - lastView > 3600000) {
-        count++;
-        localStorage.setItem('profileViews', count);
-        localStorage.setItem('lastView', now);
-      }
-
-      document.getElementById('view-count').innerText = `Views: ${count}`;
-    });
-
     // Minecraft whitelist form handling
     document.getElementById('mc-whitelist-form').addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -587,6 +691,45 @@ ${locationText}`
       musicMuted = !musicMuted;
       music.muted = musicMuted;
       musicIcon.className = musicMuted ? "fas fa-volume-mute" : "fas fa-volume-up";
+    });
+
+    // --- Starfall logic ---
+    const starSky = document.getElementById('star-sky');
+    function randomBetween(a, b) {
+      return Math.random() * (b - a) + a;
+    }
+    function spawnStar() {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = `${randomBetween(0, 100)}vw`;
+      star.style.top = `${randomBetween(-10, 0)}vh`;
+      star.style.width = star.style.height = `${randomBetween(1, 2.5)}px`;
+      star.style.opacity = randomBetween(0.6, 1);
+      star.style.animationDuration = `${randomBetween(2.5, 5.5)}s`;
+      starSky.appendChild(star);
+      setTimeout(() => star.remove(), 6000);
+    }
+    setInterval(spawnStar, 180); // spawn stars every 180ms
+
+    // --- Static stars in the sky ---
+    for (let i = 0; i < 60; i++) {
+      const staticStar = document.createElement('div');
+      staticStar.className = 'star';
+      staticStar.style.left = `${randomBetween(2, 98)}vw`;
+      staticStar.style.top = `${randomBetween(2, 30)}vh`;
+      staticStar.style.width = staticStar.style.height = `${randomBetween(1, 2.5)}px`;
+      staticStar.style.opacity = randomBetween(0.5, 1);
+      staticStar.style.animation = 'none';
+      starSky.appendChild(staticStar);
+    }
+
+    // --- Moon shine and break logic ---
+    const moon = document.getElementById('moon');
+    moon.addEventListener('click', () => {
+      moon.classList.add('broken');
+      setTimeout(() => {
+        moon.classList.remove('broken');
+      }, 2000); // moon "repairs" after 2 seconds
     });
   </script>
 </body>
