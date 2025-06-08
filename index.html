@@ -273,37 +273,18 @@
     }
 
     .whitelist-form {
-      margin: 26px auto 0 auto;
-      background: linear-gradient(135deg, rgba(168,85,247,0.13) 0%, rgba(147,51,234,0.13) 100%);
-      border-radius: 18px;
-      padding: 16px 14px 12px 14px;
-      max-width: 260px;
-      width: 100%;
-      box-shadow: 0 0 18px 0 rgba(168,85,247,0.10), 0 4px 18px 0 rgba(0,0,0,0.13);
-      border: 2px solid rgba(168,85,247,0.18);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 1;
-      position: relative;
-      font-family: 'Minecraftia', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      animation: profileFadeIn 1s cubic-bezier(.77,0,.18,1);
-      transition: box-shadow 0.4s, border 0.4s, background 0.4s;
+      /* background: none; */
+      /* box-shadow: none; */
+      /* border: none; */
+      /* padding: 0; */
+      /* margin-top: 18px; */
     }
-
-    .whitelist-form:hover {
-      box-shadow: 0 0 28px 0 #a855f7, 0 4px 28px 0 #9333ea;
-      border: 2.5px solid #a855f7;
-      background: linear-gradient(120deg, rgba(168,85,247,0.22) 0%, rgba(147,51,234,0.22) 100%);
-    }
-
     .whitelist-form h2 {
-      font-size: 1em;
-      margin-bottom: 8px;
-      color: #c084fc;
-      letter-spacing: 1px;
-      text-shadow: 0 0 6px #a855f7;
+      color: #fdfdfd !important; /* Minecraft green */
+      text-shadow: 1px 1px 0 #fff, 0 0 6px #ffffff;
       font-family: 'Minecraftia', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
     }
 
     #mc-whitelist-form {
@@ -398,20 +379,47 @@
     <p class="quote">Follow your dream, not people.</p>
     <div class="views" id="view-count">Views: 0</div>
     <div class="social-icons">
-      <a href="#"><i class="fab fa-instagram"></i></a>
-      <a href="#"><i class="fab fa-discord"></i></a>
-      <a href="#"><i class="fab fa-tiktok"></i></a>
+      <a href="https://instagram.com/ze2ow" target="_blank" rel="noopener" title="Instagram"><i class="fab fa-instagram"></i></a>
+      <a href="https://discord.gg/JfGhPfDFA7" target="_blank" rel="noopener" title="Discord"><i class="fab fa-discord"></i></a>
+      <a href="https://tiktok.com/@czezo" target="_blank" rel="noopener" title="TikTok"><i class="fab fa-tiktok"></i></a>
     </div>
     <!-- Move whitelist form INSIDE profile, at the bottom -->
-    <div class="whitelist-form">
-      <h2>Minecraft Whitelist</h2>
-      <form id="mc-whitelist-form">
+    <div class="whitelist-form" style="background:none; box-shadow:none; border:none; padding:0; margin-top:18px;">
+      <h2 style="margin-bottom:6px; font-family: 'Minecraftia', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; letter-spacing:1px; text-shadow:0 0 6px #a855f7; color:#c084fc;">
+        Minecraft Whitelist
+      </h2>
+      <form id="mc-whitelist-form" style="display:flex; gap:5px;">
         <input type="text" id="mc-name" placeholder="نافئ خويئ ماينكرافتئ" required maxlength="16" />
         <button type="submit">Send</button>
       </form>
       <div id="whitelist-message"></div>
     </div>
   </div>
+
+  <!-- Add this just before the closing </body> tag -->
+  <button id="music-toggle" aria-label="Toggle music" style="
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 99;
+    background: rgba(60,7,100,0.65);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 12px #a855f7;
+    cursor: pointer;
+    transition: background 0.2s;
+  ">
+    <i id="music-icon" class="fas fa-volume-up" style="color:#fff;font-size:1.3em;"></i>
+  </button>
+  <audio id="bg-music" loop>
+    <source src="https://cdn.pixabay.com/audio/2022/10/16/audio_12b5fae5e2.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
 
   <script>
     // View counter using localStorage + timestamp fallback
@@ -435,6 +443,17 @@
       e.preventDefault();
       const name = document.getElementById('mc-name').value.trim();
       const msg = document.getElementById('whitelist-message');
+      const lastSentKey = 'mcWhitelistLastSent';
+      const now = Date.now();
+
+      // Check if user already submitted in the last 24 hours
+      const lastSent = parseInt(localStorage.getItem(lastSentKey)) || 0;
+      if (now - lastSent < 24 * 60 * 60 * 1000) {
+        const hoursLeft = Math.ceil((24 * 60 * 60 * 1000 - (now - lastSent)) / (60 * 60 * 1000));
+        msg.textContent = `You can only send once every 24 hours. Please try again in ${hoursLeft} hour(s).`;
+        return;
+      }
+
       if (!name) {
         msg.textContent = "Please enter your Minecraft name.";
         return;
@@ -458,12 +477,32 @@
         if (res.ok) {
           msg.textContent = "Your name was sent! You will be whitelisted soon.";
           document.getElementById('mc-whitelist-form').reset();
+          localStorage.setItem(lastSentKey, now.toString());
         } else {
           msg.textContent = "Error sending. Please try again later.";
         }
       } catch {
         msg.textContent = "Network error. Please try again.";
       }
+    });
+
+    // Music player logic
+    const music = document.getElementById('bg-music');
+    const musicToggle = document.getElementById('music-toggle');
+    const musicIcon = document.getElementById('music-icon');
+    let musicMuted = false;
+
+    // Start music automatically (user must interact first on most browsers)
+    window.addEventListener('click', function autoPlayMusic() {
+      music.volume = 0.25;
+      music.play().catch(()=>{});
+      window.removeEventListener('click', autoPlayMusic);
+    });
+
+    musicToggle.addEventListener('click', function() {
+      musicMuted = !musicMuted;
+      music.muted = musicMuted;
+      musicIcon.className = musicMuted ? "fas fa-volume-mute" : "fas fa-volume-up";
     });
   </script>
 </body>
