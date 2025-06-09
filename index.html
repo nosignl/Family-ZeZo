@@ -158,9 +158,6 @@
     </form>
     <div id="whitelist-message" style="margin-top:10px;"></div>
   </div>
-  <div id="whitelist-stats" style="margin-top:18px;font-family:Minecraftia,'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:1.08em;color:#fff;text-shadow:0 0 8px #a855f7,0 0 16px #9333ea;">
-    People joined: <span id="whitelist-count" style="font-family:Minecraftia,monospace;">0</span>
-  </div>
 </div>
 <style>
 @keyframes fadeIn {
@@ -253,29 +250,6 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   type();
 });
-</script>
-<script>
-async function updateWhitelistCount() {
-  // Replace 'whitelist_requests' with your actual table name if different
-  const url = "https://pqxlneleppwwvjvpqyka.supabase.co/rest/v1/whitelist_requests?select=id";
-  const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxeGxuZWxlcHB3d3ZqdnBxeWthIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0ODY2ODksImV4cCI6MjA2NTA2MjY4OX0.r-5XqXHO3iZ9e4gdxmVFyRx1_ITYfCRE7i9Q4EqQDTE"; // <-- Replace with your Supabase anon/public key
-
-  try {
-    const res = await fetch(url, {
-      headers: {
-        apikey: apiKey,
-        Authorization: `Bearer ${apiKey}`,
-        Prefer: "count=exact"
-      }
-    });
-    // The count is in the Content-Range header
-    const count = res.headers.get("content-range")?.split("/")[1] || "0";
-    document.getElementById('whitelist-count').textContent = count;
-  } catch (e) {
-    document.getElementById('whitelist-count').textContent = "0";
-  }
-}
-updateWhitelistCount();
 </script>
 </body>
 </html>
