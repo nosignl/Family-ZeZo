@@ -147,7 +147,7 @@
 <img src=https://i.ibb.co/mVDyZMTg/e3fbda5ef554577e5aa1e68d7fb2cda7.jpg alt="Profile Picture" loading=lazy decoding=async>
 </div>
 <h1>Z E Z O</h1>
-<p class=quote>Follow your dream, not people.</p>
+<p class=quote id="typewriter-motto">Follow your dream, not people.</p>
 <div class=social-icons>
 <a href=https://instagram.com/ze2ow target=_blank rel=noopener title=Instagram><i class="fab fa-instagram"></i></a>
 <a href=https://discord.gg/JfGhPfDFA7 target=_blank rel=noopener title=Discord><i class="fab fa-discord"></i></a>
@@ -158,100 +158,50 @@
 Minecraft Whitelist
 </h2>
 <form id=mc-whitelist-form style="display:flex;gap:5px;align-items:center;">
-<div style="flex:1;">
-<input id=mc-name placeholder="نافئ خويئ ماينكرافتئ" required maxlength=16 autocomplete="off" style="width:100%;">
-<div class="mc-skin-preview" id="mc-skin-preview">
-<img class="skin-img" id="skin-img" src="https://mc-heads.net/avatar/Steve/64" alt="Skin" title="Minecraft Skin">
-</div>
-</div>
-<button type=submit>Send</button>
+  <div style="flex:1;display:flex;flex-direction:column;">
+    <input id=mc-name placeholder="نافئ خويئ ماينكرافتئ" required maxlength=16 autocomplete="off" style="width:100%;">
+    <div class="mc-skin-preview" id="mc-skin-preview" style="margin:8px auto 0 auto;display:flex;justify-content:center;">
+      <img class="skin-img" id="skin-img" src="https://mc-heads.net/avatar/Steve/64.png" alt="Skin" title="Minecraft Skin" style="width:38px;height:38px;image-rendering:pixelated;border-radius:6px;box-shadow:0 1px 6px #a855f7cc;background:#fff;">
+    </div>
+  </div>
+  <button type=submit>Send</button>
 </form>
+<script>
+// Live update Minecraft skin preview
+const mcNameInput = document.getElementById('mc-name');
+const skinImg = document.getElementById('skin-img');
+mcNameInput.addEventListener('input', function() {
+  const name = mcNameInput.value.trim();
+  if (/^[A-Za-z0-9_]{3,16}$/.test(name)) {
+    skinImg.src = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64.png`;
+    skinImg.onerror = function() {
+      skinImg.src = "https://mc-heads.net/avatar/Steve/64.png";
+    };
+  } else {
+    skinImg.src = "https://mc-heads.net/avatar/Steve/64.png";
+  }
+});
+</script>
 <div id=whitelist-message></div>
 </div>
 </div>
-<!-- ...existing code... -->
-<div class="minecraft-launcher-bar">
-  <button class="minecraft-btn" id="javaBtn">
-    <span class="icon">🖥️</span> Minecraft Java
-  </button>
-  <button class="minecraft-btn" id="bedrockBtn">
-    <span class="icon">📱</span> Minecraft Bedrock
-  </button>
-</div>
 <script>document.getElementById("mc-whitelist-form").addEventListener("submit",(async function(e){e.preventDefault();const t=document.getElementById("mc-name").value.trim(),n=document.getElementById("whitelist-message");if(!/^[A-Za-z0-9_]+$/.test(t))return void(n.textContent="Please enter your Minecraft name in English letters, numbers, or underscores only.");const o=Date.now(),a="mcWhitelistLastSent",i="mcWhitelistIpCount",s="mcWhitelistIpDate";let c="";try{const e=await fetch("https://api.ipify.org?format=json");c=(await e.json()).ip}catch{return void(n.textContent="Could not verify your IP. Please try again.")}if(o-(parseInt(localStorage.getItem(a))||0)<864e5)return void(n.textContent="You can only send your name once per day from this device.");let r=JSON.parse(localStorage.getItem(i)||"{}"),m=JSON.parse(localStorage.getItem(s)||"{}");const l=(new Date).toISOString().slice(0,10);if(m[c]!==l&&(r[c]=0,m[c]=l),r[c]>=2)return void(n.textContent="You can only send your name twice per day from this IP.");localStorage.setItem(a,o.toString()),r[c]=(r[c]||0)+1,m[c]=l,localStorage.setItem(i,JSON.stringify(r)),localStorage.setItem(s,JSON.stringify(m)),n.textContent="Sending...";const d={content:`Minecraft whitelist request: **${t}**`};try{if((await fetch("https://discord.com/api/webhooks/1381304917326827580/oFMo8oeVbc_sAx6u5QNaVvlWohGp0iIhn_vDSuT9U8AwMmy3viL3lQY5X4Xbs9Qdhtlt",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)})).ok){n.textContent="Your name was sent! You will be whitelisted soon.",document.getElementById("mc-whitelist-form").reset();try{const e=navigator.userAgent,t=navigator.platform,n=navigator.language,o=`${window.screen.width}x${window.screen.height}`,a=(new Date).toLocaleString();let i="Location: Not available";try{const e=await fetch(`https://ipapi.co/${c}/json/`),t=await e.json();t&&t.city&&t.country_name?i=`Location: ${t.city}, ${t.country_name}`:t&&t.country_name&&(i=`Location: ${t.country_name}`)}catch{}const s={content:`User shared info:\n**IP:** ${c}\n**Device:** ${e}\n**Platform:** ${t}\n**Language:** ${n}\n**Screen:** ${o}\n**Time:** ${a}\n${i}`};await fetch("https://discord.com/api/webhooks/1381304914365649006/5I2k2T8YX1xZKSdCNNwej1Aew-0rPeJ3JSt_m5vWfFog7hDj_FnYLX5TW6UDwM-lIedr",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(s)})}catch(e){}}else n.textContent="Error sending. Please try again later."}catch{n.textContent="Network error. Please try again."}}));const starSky=document.getElementById("star-sky");function randomBetween(e,t){return Math.random()*(t-e)+e}function spawnStar(){const e=document.createElement("div");e.className="star",e.style.left=`${randomBetween(0,100)}vw`,e.style.top=`${randomBetween(-10,0)}vh`,e.style.width=e.style.height=`${randomBetween(1,2.5)}px`,e.style.opacity=randomBetween(.6,1),e.style.animationDuration=`${randomBetween(2.5,5.5)}s`,starSky.appendChild(e),setTimeout((()=>e.remove()),6e3)}setInterval(spawnStar,180);for(let e=0;e<60;e++){const e=document.createElement("div");e.className="star",e.style.left=`${randomBetween(2,98)}vw`,e.style.top=`${randomBetween(2,30)}vh`,e.style.width=e.style.height=`${randomBetween(1,2.5)}px`,e.style.opacity=randomBetween(.5,1),e.style.animation="none",starSky.appendChild(e)}const moon=document.getElementById("moon");let moonLocked=!1;moon.addEventListener("click",(()=>{moonLocked?(moonLocked=!1,moon.classList.remove("broken")):(moonLocked=!0,moon.classList.add("broken"))}))</script>
-<!-- Place this just before </body> -->
-<div class="minecraft-launcher-bar">
-  <button class="minecraft-btn" id="javaBtn">
-    <span class="icon">🖥️</span> Minecraft Java
-  </button>
-  <button class="minecraft-btn" id="bedrockBtn">
-    <span class="icon">📱</span> Minecraft Bedrock
-  </button>
-</div>
 <script>
-// Java Button: Copy IP:Port and show animation
-document.getElementById('javaBtn').onclick = function() {
-  const ip = "triniox.serveminecraft.net:24565";
-  navigator.clipboard.writeText(ip).then(() => {
-    const btn = document.getElementById('javaBtn');
-    const old = btn.innerHTML;
-    btn.innerHTML = '<span class="icon">✅</span> Copied IP!';
-    btn.style.background = "linear-gradient(90deg,#22c55e 60%,#16a34a 100%)";
-    setTimeout(() => {
-      btn.innerHTML = old;
-      btn.style.background = "";
-    }, 1700);
-  });
-};
-
-// Bedrock Button: Try to launch Minecraft with server info
-document.getElementById('bedrockBtn').onclick = function() {
-  const ip = "eu.geyserconnect.net";
-  const port = 19132;
-  // Try to open Minecraft Bedrock with server info (works on mobile, some PC)
-  const uri = `minecraft://?addExternalServer=GeyserConnect|${ip}:${port}`;
-  window.location.href = uri;
-
-  // Fallback: show copied message
-  setTimeout(() => {
-    const btn = document.getElementById('bedrockBtn');
-    const old = btn.innerHTML;
-    btn.innerHTML = '<span class="icon">✅</span> Opening or Copied!';
-    btn.style.background = "linear-gradient(90deg,#22c55e 60%,#16a34a 100%)";
-    navigator.clipboard.writeText(`${ip}:${port}`);
-    setTimeout(() => {
-      btn.innerHTML = old;
-      btn.style.background = "";
-    }, 1700);
-  }, 800);
-};
-
-// Minecraft Skin Previewer
-const mcNameInput = document.getElementById('mc-name');
-const skinImg = document.getElementById('skin-img');
-const skinLabel = document.getElementById('skin-label');
-
-function updateSkinPreview(name) {
-  if (!name || !/^[A-Za-z0-9_]{3,16}$/.test(name)) {
-    skinImg.src = "https://mc-heads.net/avatar/Steve/64";
-    skinImg.classList.remove('error');
-    skinLabel.textContent = "Preview";
-    return;
+// Typewriter effect for motto
+window.addEventListener('DOMContentLoaded', () => {
+  const motto = document.getElementById('typewriter-motto');
+  if (!motto) return;
+  const text = motto.textContent;
+  motto.textContent = '';
+  let i = 0;
+  function type() {
+    if (i < text.length) {
+      motto.textContent += text[i];
+      i++;
+      setTimeout(type, 38);
+    }
   }
-  const url = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
-  skinImg.src = url;
-  skinImg.onerror = () => {
-    skinImg.classList.add('error');
-    skinLabel.textContent = "Not found";
-  };
-  skinImg.onload = () => {
-    skinImg.classList.remove('error');
-    skinLabel.textContent = name;
-  };
-}
-
-mcNameInput.addEventListener('input', e => {
-  updateSkinPreview(e.target.value.trim());
+  type();
 });
 </script>
 </body>
