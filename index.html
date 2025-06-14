@@ -243,7 +243,7 @@
     // --- Firebase SDK Imports ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, addDoc, serverTimestamp, query, where, deleteDoc, updateDoc, runTransaction, increment } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, addDoc, serverTimestamp, query, where, deleteDoc, updateDoc, runTransaction, increment, getDocs } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
     // --- ImgBB CONFIGURATION ---
     const IMGBB_API_KEY = "f4674c56e25d7969059afe104aa60375";
@@ -325,6 +325,34 @@
         reader.onload = () => resolve(reader.result.split(',')[1]);
         reader.onerror = error => reject(error);
     });
+
+    function canViewImageToday(imgId) {
+        const views = JSON.parse(localStorage.getItem('imageViews') || '{}');
+        const today = new Date().toISOString().slice(0, 10);
+        if (views[imgId] === today) return false;
+        views[imgId] = today;
+        localStorage.setItem('imageViews', JSON.stringify(views));
+        return true;
+    }
+
+    async function giveDailyBonus() {
+        const lastBonus = localStorage.getItem('lastDailyBonus') || '';
+        const today = new Date().toISOString().slice(0, 10);
+        if (lastBonus === today) return;
+        localStorage.setItem('lastDailyBonus', today);
+
+        // Add 1 view and 1 like to all images
+        const q = collection(db, "images");
+        const snapshot = await getDocs(q);
+        snapshot.forEach(async (docSnap) => {
+            const imageRef = doc(db, "images", docSnap.id);
+            await updateDoc(imageRef, {
+                views: increment(1),
+                likes: (docSnap.data().likes || []).concat(['daily_' + today])
+            });
+        });
+    }
+    giveDailyBonus();
 
     // ===============================================================
     // MAIN INITIALIZATION
@@ -530,8 +558,8 @@
         lightboxImg.src = src;
         lightbox.classList.add('visible');
         resetZoom();
-        // Increment views in Firestore
-        if (imgId) {
+        // Only increment view if not viewed today
+        if (imgId && canViewImageToday(imgId)) {
             const imageRef = doc(db, "images", imgId);
             updateDoc(imageRef, { views: increment(1) }).catch(() => {});
         }
@@ -561,28 +589,26 @@
 
     // --- LIKE LOGIC ---
     async function toggleLike(imageId) {
-        const likerId = currentUser ? currentUser.uid : anonymousUserId;
-        if (!likerId) return;
+        const today = new Date().toISOString().slice(0, 10);
+        const likes = JSON.parse(localStorage.getItem('imageLikes') || '{}');
+        if (likes[imageId] === today) return; // Already liked today
+
+        likes[imageId] = today;
+        localStorage.setItem('imageLikes', JSON.stringify(likes));
 
         const imageRef = doc(db, "images", imageId);
         try {
             await runTransaction(db, async (transaction) => {
                 const imageDoc = await transaction.get(imageRef);
                 if (!imageDoc.exists()) throw "Document does not exist!";
-                
-                const likes = imageDoc.data().likes || [];
-                const likeIndex = likes.indexOf(likerId);
-
-                if (likeIndex === -1) {
-                    likes.push(likerId);
-                } else {
-                    likes.splice(likeIndex, 1);
-                }
-                transaction.update(imageRef, { likes });
+                const likesArr = imageDoc.data().likes || [];
+                likesArr.push('anon_' + today); // Use a dummy value for anonymous like
+                transaction.update(imageRef, { likes: likesArr });
             });
         } catch (e) {
             console.error("Like transaction failed: ", e);
         }
+        renderPage(); // Update UI
     }
 
     // --- PAGINATION LOGIC ---
