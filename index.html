@@ -9,13 +9,14 @@
     <style>
         /* Base and Animation Styles */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body, html { height: 100%; }
-        body { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; text-align: center; position: relative; overflow-x: hidden; background: linear-gradient(180deg, #181b2c 0%, #232946 100%); padding-top: 20px; padding-bottom: 20px; }
+        html { scroll-behavior: smooth; }
+        body, html { width: 100%; }
+        body { min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; color: #fff; text-align: center; position: relative; overflow-x: hidden; background: linear-gradient(180deg, #181b2c 0%, #232946 100%); padding-top: 20px; padding-bottom: 20px; }
         .star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; opacity: .85; pointer-events: none; z-index: 0; animation: starFall linear; }
         @keyframes starFall { 0% { opacity: .9; transform: translateY(0) scale(1) } 80% { opacity: 1; transform: translateY(90vh) scale(1.2) } 100% { opacity: 0; transform: translateY(100vh) scale(.7) } }
         
         /* Profile Card Styles */
-        .profile { background: linear-gradient(135deg, rgba(168, 85, 247, .18) 0, rgba(147, 51, 234, .18) 100%); padding: 32px 28px; border-radius: 28px; width: 90%; max-width: 370px; box-shadow: 0 0 32px 0 rgba(168, 85, 247, .18), 0 8px 32px 0 rgba(0,0,0,.25); position: relative; border: 2px solid rgba(168, 85, 247, .25); overflow: hidden; animation: profileFadeIn 1.2s cubic-bezier(.77,0,.18,1) both; transition: box-shadow .5s, border .5s, background .5s; z-index: 1; margin-top: 5vh; }
+        .profile { background: linear-gradient(135deg, rgba(168, 85, 247, .18) 0, rgba(147, 51, 234, .18) 100%); padding: 32px 28px; border-radius: 28px; width: 90%; max-width: 370px; box-shadow: 0 0 32px 0 rgba(168, 85, 247, .18), 0 8px 32px 0 rgba(0,0,0,.25); position: relative; border: 2px solid rgba(168, 85, 247, .25); overflow: hidden; animation: profileFadeIn 1.2s cubic-bezier(.77,0,.18,1) both; transition: box-shadow .5s, border .5s, background .5s; z-index: 1; margin-top: 5vh; flex-shrink: 0; }
         .profile:hover { box-shadow: 0 0 48px 0 #a855f7, 0 8px 48px 0 #9333ea; border: 2.5px solid #a855f7; background: linear-gradient(120deg, rgba(168, 85, 247, .28) 0, rgba(147, 51, 234, .28) 100%); }
         @keyframes profileFadeIn { 0% { opacity: 0; transform: scale(.92) translateY(40px); filter: blur(6px) } 100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0) } }
         .avatar-container { position: relative; display: inline-block; width: 116px; height: 116px; margin: 0 auto; }
@@ -178,13 +179,15 @@
 
     <div class="screenshot-gallery-container" id="gallery-section">
         <h2>Minecraft Screenshot Gallery</h2>
-        <div class="upload-area disabled" id="upload-area">
-            <input type="file" id="file-input" multiple accept="image/png, image/jpeg">
-            <div class="upload-icon">
-                <i class="fas fa-cloud-upload-alt"></i>
+        <div class="upload-area" id="upload-container">
+            <div id="upload-content">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <p id="upload-prompt">Welcome! Enjoy the gallery.</p>
             </div>
-            <p id="upload-prompt">Welcome! Enjoy the gallery.</p>
         </div>
+        <input type="file" id="file-input" multiple accept="image/png, image/jpeg" style="display:none;">
         <div id="upload-message"></div>
         <div id="screenshot-grid">
             <!-- Screenshots will appear here -->
@@ -257,7 +260,7 @@
     const mcUsernameInput = document.getElementById('mc-username-input');
     const sendWhitelistBtn = document.getElementById('send-whitelist-btn');
     const whitelistMessage = document.getElementById('whitelist-message');
-    const uploadArea = document.getElementById('upload-area');
+    const uploadContainer = document.getElementById('upload-container');
     const fileInput = document.getElementById('file-input');
     const uploadPrompt = document.getElementById('upload-prompt');
     const uploadMessage = document.getElementById('upload-message');
@@ -285,6 +288,7 @@
     const IMAGES_PER_PAGE = 12;
     let currentZoom = 1, isPanning = false, startX, startY, translateX, translateY;
     let skinUpdateTimeout;
+    let anonymousUserId = '';
 
     // ===============================================================
     // HELPER FUNCTIONS
@@ -312,6 +316,13 @@
     // MAIN INITIALIZATION
     // ===============================================================
     function init() {
+        // Set up anonymous ID for liking
+        anonymousUserId = localStorage.getItem('anonymousUserId');
+        if (!anonymousUserId) {
+            anonymousUserId = crypto.randomUUID();
+            localStorage.setItem('anonymousUserId', anonymousUserId);
+        }
+    
         setupEventListeners();
         fetchAndDisplayImages(); // Initial fetch for logged-out users
         onAuthStateChanged(auth, async (user) => {
@@ -328,11 +339,13 @@
                 currentUserRole = 'user';
             }
             updateUIVisibility();
-            fetchAndDisplayImages(); // Re-fetch to apply roles (e.g., admin sees hidden)
+            fetchAndDisplayImages(); 
         });
+        window.scrollTo(0, 0); // Fix scrolling issue
     }
 
     function updateUIVisibility() {
+        const uploadArea = uploadContainer.parentElement;
         if (currentUser) {
             loginBtn.style.display = 'none';
             userProfileArea.style.display = 'flex';
@@ -346,14 +359,13 @@
             uploadArea.classList.add('disabled');
             uploadPrompt.innerHTML = 'Please <strong>login</strong> to upload screenshots.';
         }
-        renderPage(); // Re-render to show/hide user-specific controls
+        renderPage(); 
     }
 
     // ===============================================================
     // WHITELIST FORM LOGIC
     // ===============================================================
     const defaultSkinUrl = 'https://crafatar.com/avatars/steve?size=40&overlay';
-    whitelistBtn.addEventListener('click', () => whitelistForm.classList.toggle('visible'));
     
     mcUsernameInput.addEventListener('input', () => {
         clearTimeout(skinUpdateTimeout);
@@ -366,52 +378,20 @@
         }, 300);
     });
 
-    sendWhitelistBtn.addEventListener('click', async () => {
-        const username = mcUsernameInput.value.trim();
-        if (!username) { whitelistMessage.textContent = "Please enter a username."; return; }
-        if (!currentUser) { whitelistMessage.textContent = "Please login to send a request."; return; }
-
-        whitelistMessage.textContent = "Sending...";
-        try {
-            const response = await fetch(DISCORD_WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    content: `New whitelist request from **${currentUser.displayName}** (UID: ${currentUser.uid}): \`${username}\``,
-                    username: "Whitelist Bot", avatar_url: "https://i.imgur.com/4M34G3p.png"
-                })
-            });
-            if (!response.ok) throw new Error(`Discord API error: ${response.status}`);
-            whitelistMessage.textContent = "Request sent successfully!";
-            mcUsernameInput.value = '';
-        } catch (error) {
-            console.error("Webhook send error:", error);
-            whitelistMessage.textContent = "Failed to send request.";
-        }
-        setTimeout(() => { whitelistMessage.textContent = ''; }, 5000);
-    });
-
     // ===============================================================
     // IMAGE GALLERY LOGIC (WITH AI CHECK)
     // ===============================================================
     async function checkIsMinecraft(base64ImageData) {
         const apiKey = "";
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-        const payload = {
-            contents: [{ parts: [
-                { text: "Is this image a screenshot from the video game Minecraft, or is it a Minecraft-related artwork? Answer with only 'yes' or 'no'." },
-                { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }
-            ]}]
-        };
+        const payload = { contents: [{ parts: [ { text: "Is this image a screenshot from the video game Minecraft, or is it a Minecraft-related artwork? Answer with only 'yes' or 'no'." }, { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }]}] };
         try {
             const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            if (!response.ok) return true; // Fail-safe
+            if (!response.ok) return true; 
             const result = await response.json();
             const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
             return !(text && text.toLowerCase().trim().includes('no'));
-        } catch (error) {
-            return true;
-        }
+        } catch (error) { return true; }
     }
 
     async function handleFiles(files) {
@@ -508,8 +488,9 @@
                 const likeSection = document.createElement('div');
                 likeSection.className = 'like-section';
                 const likeCount = (imgData.likes || []).length;
+                const likerId = currentUser ? currentUser.uid : anonymousUserId;
                 likeSection.innerHTML = `<i class="fas fa-heart"></i> <span class="like-count">${likeCount}</span>`;
-                if (currentUser && imgData.likes?.includes(currentUser.uid)) {
+                if (imgData.likes?.includes(likerId)) {
                     likeSection.classList.add('liked');
                 }
                 likeSection.onclick = (e) => { e.stopPropagation(); toggleLike(imgData.id); };
@@ -573,10 +554,9 @@
 
     // --- LIKE LOGIC ---
     async function toggleLike(imageId) {
-        if (!currentUser) {
-            alert("Please login to like images!");
-            return;
-        }
+        const likerId = currentUser ? currentUser.uid : anonymousUserId;
+        if (!likerId) return;
+
         const imageRef = doc(db, "images", imageId);
         try {
             await runTransaction(db, async (transaction) => {
@@ -584,10 +564,10 @@
                 if (!imageDoc.exists()) throw "Document does not exist!";
                 
                 const likes = imageDoc.data().likes || [];
-                const likeIndex = likes.indexOf(currentUser.uid);
+                const likeIndex = likes.indexOf(likerId);
 
                 if (likeIndex === -1) {
-                    likes.push(currentUser.uid);
+                    likes.push(likerId);
                 } else {
                     likes.splice(likeIndex, 1);
                 }
@@ -614,9 +594,12 @@
     }
     
     function setupEventListeners() {
-        uploadArea.addEventListener('click', () => {
+        loginBtn.addEventListener('click', () => signInWithPopup(auth, provider).catch(e => console.error("Sign-In Error:", e)));
+        logoutBtn.addEventListener('click', () => signOut(auth).catch(e => console.error("Sign Out Error:", e)));
+        whitelistBtn.addEventListener('click', () => whitelistForm.classList.toggle('visible'));
+        uploadContainer.addEventListener('click', () => {
             if (IMGBB_API_KEY === "YOUR_IMGBB_API_KEY") { uploadMessage.textContent = "Error: ImgBB API Key is not configured."; return; }
-            if (!uploadArea.classList.contains('disabled')) fileInput.click();
+            if (!uploadContainer.parentElement.classList.contains('disabled')) fileInput.click();
         });
         fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
         prevPageBtn.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderPage(); } });
