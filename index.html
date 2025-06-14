@@ -11,17 +11,19 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         html { scroll-behavior: smooth; }
         body, html { width: 100%; }
-        body { min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; color: #fff; text-align: center; position: relative; overflow-x: hidden; background: linear-gradient(180deg, #181b2c 0%, #232946 100%); padding-top: 80px; padding-bottom: 120px; /* Added padding for music player */ }
+        body { min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; color: #fff; text-align: center; position: relative; overflow-x: hidden; background: linear-gradient(180deg, #181b2c 0%, #232946 100%); padding-top: 80px; padding-bottom: 20px; }
         .star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; opacity: .85; pointer-events: none; z-index: 0; animation: starFall linear; }
         @keyframes starFall { 0% { opacity: .9; transform: translateY(-10vh) scale(1) } 100% { opacity: 0; transform: translateY(110vh) scale(.7) } }
         
         /* Profile Card Styles */
         .profile { background: linear-gradient(135deg, rgba(168, 85, 247, .18) 0, rgba(147, 51, 234, .18) 100%); padding: 32px 28px; border-radius: 28px; width: 90%; max-width: 370px; box-shadow: 0 0 32px 0 rgba(168, 85, 247, .18), 0 8px 32px 0 rgba(0,0,0,.25); position: relative; border: 2px solid rgba(168, 85, 247, .25); animation: profileFadeIn 1.2s cubic-bezier(.77,0,.18,1) both; transition: box-shadow .5s, border .5s, background .5s; z-index: 1; flex-shrink: 0; }
+        .profile:hover { box-shadow: 0 0 48px 0 #a855f7, 0 8px 48px 0 #9333ea; border: 2.5px solid #a855f7; background: linear-gradient(120deg, rgba(168, 85, 247, .28) 0, rgba(147, 51, 234, .28) 100%); }
         @keyframes profileFadeIn { 0% { opacity: 0; transform: scale(.92) translateY(40px); filter: blur(6px) } 100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0) } }
         .avatar-container { position: relative; display: inline-block; width: 116px; height: 116px; margin: 0 auto; }
         .avatar-border { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(from 0deg, #a855f7 0, #9333ea 25%, #7e22ce 50%, #6b21a8 75%, #a855f7 100%); animation: spin 3s linear infinite; z-index: 0; }
         @keyframes spin { 0% { transform: rotate(0) } 100% { transform: rotate(360deg) } }
-        .profile img#profile-pic { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; position: absolute; top: 8px; left: 8px; z-index: 1; }
+        .profile img#profile-pic { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; position: absolute; top: 8px; left: 8px; z-index: 1; transition: transform .5s ease, filter .5s ease; }
+        .avatar-container:hover img#profile-pic { transform: scale(1.03); filter: brightness(1.1); }
         .profile h1#user-name { margin: 15px 0 5px; font-size: 1.8em; letter-spacing: 3px; }
         .profile p { font-size: .95em; color: #ddd; }
         .social-icons { margin-top: 20px; }
@@ -35,10 +37,9 @@
         .action-btn { font-family: 'Minecraftia', sans-serif; font-size: 1em; background: linear-gradient(90deg, #9333ea 60%, #a855f7 100%); border: 2px solid #a855f7; color: #fff; padding: 10px 25px; border-radius: 12px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 2px 12px #9333eacc; }
         .action-btn:hover { transform: scale(1.05); box-shadow: 0 4px 20px #a855f7; }
         
-        .collapsible-content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s ease-out, opacity 0.4s ease-out; opacity: 0; }
-        .collapsible-content.visible { grid-template-rows: 1fr; opacity: 1; }
-        .collapsible-inner { overflow: hidden; }
-
+        .collapsible-content { display: none; opacity: 0; transform: translateY(-10px); transition: all 0.4s ease-out; }
+        .collapsible-content.visible { display: block; opacity: 1; transform: translateY(0); }
+        
         #whitelist-form { padding-top: 20px; }
         .whitelist-inner-form { display: flex; align-items: center; justify-content: center; gap: 10px; }
         .mc-input-container { display: flex; align-items: center; background: rgba(0,0,0,0.2); border: 2px solid #a855f7; border-radius: 12px; padding: 5px; flex-grow: 1; }
@@ -51,25 +52,17 @@
 
         /* Auth Section Styles */
         .auth-container { position: fixed; top: 20px; right: 20px; z-index: 1001; }
-        .auth-btn { background: linear-gradient(90deg, #a855f7 60%, #c084fc 100%); color: #fff; border: 2px solid #a855f7; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-family: 'Minecraftia', sans-serif; font-size: 1em; transition: all 0.3s ease; box-shadow: 0 2px 12px #a855f7cc; display: flex; align-items: center; gap: 10px; }
+        .auth-btn { background: linear-gradient(90deg, #a855f7 60%, #c084fc 100%); color: #fff; border: 2px solid #a855f7; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-family: 'Minecraftia', sans-serif; font-size: 1em; transition: all 0.3s ease; box-shadow: 0 2px 12px #a855f7cc; }
         .auth-btn:hover { transform: scale(1.05); box-shadow: 0 4px 20px #a855f7; }
-        #user-menu-button { display: none; cursor: pointer; }
-        #user-menu-button img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #c084fc; }
-        #user-menu { display: none; position: absolute; top: 55px; right: 0; background: #232946; border-radius: 12px; border: 1px solid #a855f7; box-shadow: 0 4px 20px #a855f755; min-width: 220px; overflow: hidden; }
-        #user-menu.visible { display: block; }
-        .menu-section { padding: 15px; border-bottom: 1px solid rgba(168, 85, 247, 0.3); }
-        .menu-section:last-child { border-bottom: none; }
-        #change-name-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #a855f7; color: white; padding: 8px; border-radius: 8px; margin-bottom: 10px; }
-        .menu-btn { width: 100%; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        #save-name-btn { background: #a855f7; color: white; }
-        #logout-btn-menu { background: #e53e3e; color: white; }
-        #name-change-message { font-size: 0.8em; color: #ccc; margin-top: 10px; min-height: 1em; }
-
+        #user-profile-area { display: none; align-items: center; gap: 15px; background-color: rgba(24, 27, 44, 0.7); padding: 8px 15px; border-radius: 50px; border: 1px solid rgba(168, 85, 247, 0.3); backdrop-filter: blur(5px); }
+        #user-profile-area img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #c084fc; }
+        #user-profile-area #auth-user-name { font-weight: bold; }
+        #logout-btn { background: #e53e3e; color: white; padding: 8px 12px; border: none; }
 
         /* Screenshot Gallery Styles */
         .screenshot-gallery-container { display: none; opacity: 0; transform: translateY(-20px); transition: all 0.5s ease-out; width: 90%; max-width: 1200px; margin: 0 auto; background: linear-gradient(135deg, rgba(24, 27, 44, 0.5) 0%, rgba(35, 41, 70, 0.5) 100%); backdrop-filter: blur(10px); border-radius: 28px; border: 2px solid rgba(168, 85, 247, 0.25); box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); z-index: 1; position: relative; }
         .screenshot-gallery-container.visible { display: block; opacity: 1; transform: translateY(0); margin-top: 60px; padding: 40px 20px; }
-        .screenshot-gallery-container h2 { font-family: 'Minecraftia', sans-serif; font-size: 2em; letter-spacing: 2px; color: #c084fc; text-shadow: 0 0 10px #a855f7, 0 0 20px #9333ea; margin-bottom: 30px; }
+        .screenshot-gallery-container h2 { font-family: 'Minecraftia', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 2em; letter-spacing: 2px; color: #c084fc; text-shadow: 0 0 10px #a855f7, 0 0 20px #9333ea; margin-bottom: 30px; }
         .upload-area { border: 3px dashed rgba(168, 85, 247, 0.6); border-radius: 20px; padding: 40px 20px; text-align: center; cursor: pointer; transition: background-color 0.3s, border-color 0.3s; position: relative; }
         .upload-area.disabled { cursor: not-allowed; background-color: rgba(0,0,0,0.3); border-color: #555; }
         .upload-area.disabled p { color: #888; }
@@ -90,9 +83,7 @@
         .uploader-info-text { display: flex; flex-direction: column; align-items: flex-start; }
         .uploader-info-text .name { font-size: 0.9em; font-weight: bold; text-shadow: 1px 1px 3px black; }
         .uploader-info-text .time-ago { font-size: 0.75em; color: #bbb; }
-        .stats-section { display: flex; align-items: center; gap: 8px; }
-        .stat { display: flex; align-items: center; gap: 4px; }
-        .like-section { cursor: pointer; }
+        .like-section { display: flex; align-items: center; gap: 5px; font-size: 1em; cursor: pointer; padding: 5px; border-radius: 5px; transition: color .2s; }
         .like-section .fa-heart { color: #ddd; }
         .like-section.liked .fa-heart { color: #a855f7; }
 
@@ -137,35 +128,11 @@
         #modal-cancel-btn { background: #4a5568; color: white; }
         #modal-cancel-btn:hover { transform: scale(1.05); }
 
-        /* Music Player Styles */
-        #music-player { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(147, 51, 234, 0.85); backdrop-filter: blur(10px); border-top: 1px solid rgba(168, 85, 247, 0.6); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-        .track-info { text-align: left; }
-        #song-title { font-family: 'Minecraftia', sans-serif; font-size: 1.1em; color: #fff; font-weight: bold; }
-        #song-artist { font-size: 0.9em; color: #eee; }
-        .player-controls { display: flex; flex-direction: column; align-items: center; gap: 5px; flex-grow: 1; margin: 0 20px; }
-        .music-buttons { display: flex; align-items: center; gap: 15px; }
-        .music-buttons button { background: none; border: none; color: #fff; font-size: 1.3em; cursor: pointer; transition: transform 0.2s; }
-        .music-buttons button:hover { transform: scale(1.1); color: #232946; }
-        #play-pause-btn { width: 50px; height: 50px; border: 2px solid #fff; border-radius: 50%; font-size: 1.5em; display: flex; justify-content: center; align-items: center; }
-        #play-pause-btn:hover { background: #fff; color: #9333ea; }
-        #progress-bar { width: 100%; height: 5px; background: rgba(255,255,255,0.3); border-radius: 5px; cursor: pointer; overflow: hidden; }
-        #progress { width: 0%; height: 100%; background: #fff; border-radius: 5px; }
-        .volume-controls { display: flex; align-items: center; gap: 10px; }
-        .volume-controls i { font-size: 1.1em; }
-        #volume-slider { -webkit-appearance: none; appearance: none; width: 100px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 4px; outline: none; cursor: pointer; }
-        #volume-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; background: #fff; border-radius: 50%; cursor: pointer; }
-        #volume-slider::-moz-range-thumb { width: 14px; height: 14px; background: #fff; border-radius: 50%; cursor: pointer; border: none; }
-
-
         /* Responsive */
-        @media (max-width: 768px) {
-            .track-info { display: none; }
-        }
         @media (max-width: 600px) {
             .profile { max-width: 90%; }
             .auth-container { top: 10px; right: 10px; }
-            #user-menu-button { display: none; }
-            #login-btn { display: block !important; }
+            #user-profile-area #auth-user-name { display: none; /* Hide name on small screens */ }
         }
     </style>
 </head>
@@ -177,18 +144,10 @@
     <button id="login-btn" class="auth-btn">
         <i class="fab fa-google"></i> Login with Google
     </button>
-    <div id="user-menu-button">
-        <img id="user-menu-pic" src="" alt="User"/>
-    </div>
-    <div id="user-menu">
-        <div class="menu-section">
-            <input type="text" id="change-name-input" placeholder="New Display Name">
-            <button id="save-name-btn" class="menu-btn">Save Name</button>
-            <p id="name-change-message"></p>
-        </div>
-        <div class="menu-section">
-            <button id="logout-btn-menu" class="menu-btn">Logout</button>
-        </div>
+    <div id="user-profile-area">
+        <img id="auth-user-pic" src="" alt="User"/>
+        <span id="auth-user-name"></span>
+        <button id="logout-btn" class="auth-btn">Logout</button>
     </div>
 </div>
 
@@ -196,8 +155,10 @@
     <div class="profile">
         <div class="avatar-container">
             <div class="avatar-border"></div>
+            <!-- This image is now static -->
             <img id="profile-pic" src="https://i.ibb.co/mVDyZMTg/e3fbda5ef554577e5aa1e68d7fb2cda7.jpg" alt="Profile Picture">
         </div>
+        <!-- This name is now static -->
         <h1 id="user-name">Z E Z O</h1>
         <p class="quote">Follow your dream, not people.</p>
         <div class="social-icons" style="margin-top:15px;">
@@ -206,6 +167,7 @@
           <a href="https://tiktok.com/@czezo" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
         </div>
         
+        <!-- Action Section -->
         <div class="action-section">
             <h3>Minecraft Server</h3>
             <div class="action-buttons">
@@ -216,7 +178,7 @@
                 <div class="collapsible-inner">
                     <div class="whitelist-inner-form">
                         <div class="mc-input-container">
-                            <img id="mc-skin-img" src="https://i.pinimg.com/736x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg" alt="MC Skin">
+                            <img id="mc-skin-img" src="https://crafatar.com/avatars/steve?size=40&overlay" alt="MC Skin" >
                             <input type="text" id="mc-username-input" placeholder="Username">
                         </div>
                         <button id="send-whitelist-btn"><i class="fas fa-paper-plane"></i></button>
@@ -239,7 +201,9 @@
         </div>
         <input type="file" id="file-input" multiple accept="image/png, image/jpeg" style="display:none;">
         <div id="upload-message"></div>
-        <div id="screenshot-grid"></div>
+        <div id="screenshot-grid">
+            <!-- Screenshots will appear here -->
+        </div>
         <div class="pagination-controls">
             <button id="prev-page" class="pagination-btn" disabled>&lt; Prev</button>
             <div id="page-numbers"></div>
@@ -248,6 +212,7 @@
     </div>
 </div>
 
+<!-- Deletion Modal HTML -->
 <div id="delete-modal" class="modal-overlay">
     <div class="modal-content">
         <h3>Confirm Deletion</h3>
@@ -259,6 +224,7 @@
     </div>
 </div>
 
+<!-- Lightbox Modal for Fullscreen Image -->
 <div id="lightbox">
     <span id="lightbox-close">&times;</span>
     <img id="lightbox-img" src="" alt="Fullscreen image">
@@ -269,51 +235,37 @@
     </div>
 </div>
 
-<div id="music-player">
-    <div class="track-info">
-        <div id="song-title">Select a song</div>
-        <div id="song-artist">Background Music</div>
-    </div>
-    <div class="player-controls">
-        <div class="music-buttons">
-            <button id="prev-btn"><i class="fas fa-backward-step"></i></button>
-            <button id="play-pause-btn"><i id="play-icon" class="fas fa-play"></i></button>
-            <button id="next-btn"><i class="fas fa-forward-step"></i></button>
-        </div>
-        <div id="progress-bar">
-            <div id="progress"></div>
-        </div>
-    </div>
-    <div class="volume-controls">
-        <i class="fas fa-volume-down"></i>
-        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.8">
-    </div>
-</div>
-<audio id="audio-player" crossOrigin="anonymous"></audio>
 
+<!-- =============================================================== -->
+<!-- SCRIPT SECTION -->
+<!-- =============================================================== -->
 <script type="module">
+    // --- Firebase SDK Imports ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, addDoc, serverTimestamp, query, where, deleteDoc, updateDoc, runTransaction, increment } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, addDoc, serverTimestamp, query, where, deleteDoc, updateDoc, runTransaction } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
+    // --- ImgBB CONFIGURATION ---
     const IMGBB_API_KEY = "f4674c56e25d7969059afe104aa60375";
+
+    // --- Discord Webhook ---
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1381304917326827580/oFMo8oeVbc_sAx6u5QNaVvlWohGp0iIhn_vDSuT9U8AwMmy3viL3lQY5X4Xbs9Qdhtlt";
+
+    // --- Firebase Configuration ---
     const firebaseConfig = { apiKey: "AIzaSyDHtwRzPA4EvInGeCDCcRlb4n8I4k2W9Ik", authDomain: "zezo-393a7.firebaseapp.com", projectId: "zezo-393a7", storageBucket: "zezo-393a7.appspot.com", messagingSenderId: "528457075385", appId: "1:528457075385:web:71dfaa69694c090c842968", measurementId: "G-00RHFXMRMN" };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    // DOM References
+    // --- DOM Element References ---
     const loginBtn = document.getElementById('login-btn');
-    const userMenuButton = document.getElementById('user-menu-button');
-    const userMenuPic = document.getElementById('user-menu-pic');
-    const userMenu = document.getElementById('user-menu');
-    const changeNameInput = document.getElementById('change-name-input');
-    const saveNameBtn = document.getElementById('save-name-btn');
-    const nameChangeMessage = document.getElementById('name-change-message');
-    const logoutBtnMenu = document.getElementById('logout-btn-menu');
+    const logoutBtn = document.getElementById('logout-btn');
+    const userProfileArea = document.getElementById('user-profile-area');
+    const authUserName = document.getElementById('auth-user-name');
+    const authUserPic = document.getElementById('auth-user-pic');
     const whitelistBtn = document.getElementById('whitelist-btn');
     const galleryBtn = document.getElementById('gallery-btn');
     const gallerySection = document.getElementById('gallery-section');
@@ -339,18 +291,8 @@
     const zoomInBtn = document.getElementById('zoom-in-btn');
     const zoomOutBtn = document.getElementById('zoom-out-btn');
     const zoomResetBtn = document.getElementById('zoom-reset-btn');
-    const audioPlayer = document.getElementById('audio-player');
-    const playPauseBtn = document.getElementById('play-pause-btn');
-    const playIcon = document.getElementById('play-icon');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const songTitle = document.getElementById('song-title');
-    const songArtist = document.getElementById('song-artist');
-    const progressBar = document.getElementById('progress-bar');
-    const progress = document.getElementById('progress');
-    const volumeSlider = document.getElementById('volume-slider');
 
-    // Global State
+    // --- Global State ---
     const ADMIN_EMAIL = "d4eners@gmail.com";
     let currentUser = null;
     let currentUserRole = 'user';
@@ -361,14 +303,6 @@
     let currentZoom = 1, isPanning = false, startX, startY, translateX, translateY;
     let skinUpdateTimeout;
     let anonymousUserId = '';
-    const userCache = new Map();
-    const viewedImages = new Set(JSON.parse(sessionStorage.getItem('viewedImages') || '[]'));
-    const playlist = [
-        { title: "C418 - Sweden (Remix)", artist: "Caution & Crisis", url: "https://audio.jukehost.co.uk/J9QkCMlTHAn9YskBBhw7HvKUmFEFSASo" },
-        { title: "Minecraft - Calm 3", artist: "C418", url: "https://audio.jukehost.co.uk/NyX3yPzdfL2ZuHa0CfG2ESdXr3Vz9qZL" }
-    ];
-    let currentTrackIndex = 0;
-    let isPlaying = false;
 
     // ===============================================================
     // HELPER FUNCTIONS
@@ -391,80 +325,14 @@
         reader.onload = () => resolve(reader.result.split(',')[1]);
         reader.onerror = error => reject(error);
     });
-    
-    // ===============================================================
-    // MUSIC PLAYER LOGIC
-    // ===============================================================
-    function loadTrack(trackIndex) {
-        audioPlayer.src = playlist[trackIndex].url;
-        songTitle.textContent = playlist[trackIndex].title;
-        songArtist.textContent = playlist[trackIndex].artist;
-    }
-
-    async function playTrack() {
-        try {
-            await audioPlayer.play();
-            isPlaying = true;
-            playIcon.classList.replace('fa-play', 'fa-pause');
-        } catch (e) {
-            console.error("Audio play error:", e);
-            isPlaying = false;
-            playIcon.classList.replace('fa-pause', 'fa-play');
-        }
-    }
-
-    function pauseTrack() {
-        audioPlayer.pause();
-        isPlaying = false;
-        playIcon.classList.replace('fa-pause', 'fa-play');
-    }
-
-    async function togglePlayPause() {
-        if (audioPlayer.paused && audioPlayer.src) {
-            await playTrack();
-        } else {
-            pauseTrack();
-        }
-    }
-
-    function playNext() {
-        currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-        loadTrack(currentTrackIndex);
-        playTrack();
-    }
-
-    function playPrev() {
-        currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
-        loadTrack(currentTrackIndex);
-        playTrack();
-    }
-    
-    function updateProgress() {
-        const { duration, currentTime } = audioPlayer;
-        if (duration) {
-            const progressPercent = (currentTime / duration) * 100;
-            progress.style.width = `${progressPercent}%`;
-        }
-    }
-
-    function setProgress(e) {
-        const width = this.clientWidth;
-        const clickX = e.offsetX;
-        const duration = audioPlayer.duration;
-        if(duration) {
-            audioPlayer.currentTime = (clickX / width) * duration;
-        }
-    }
-
 
     // ===============================================================
-    // MAIN APP LOGIC
+    // MAIN INITIALIZATION
     // ===============================================================
     function init() {
         anonymousUserId = localStorage.getItem('anonymousUserId') || crypto.randomUUID();
         localStorage.setItem('anonymousUserId', anonymousUserId);
-        
-        loadTrack(currentTrackIndex);
+    
         setupEventListeners();
         fetchAndDisplayImages(); 
         onAuthStateChanged(auth, async (user) => {
@@ -475,7 +343,7 @@
                 const role = user.email === ADMIN_EMAIL ? 'admin' : 'user';
                 currentUserRole = userDoc.exists() ? userDoc.data().role : role;
                 if (!userDoc.exists()) {
-                    await setDoc(userRef, { displayName: user.displayName, email: user.email, photoURL: user.photoURL, role, createdAt: serverTimestamp(), last_name_change: 0 });
+                    await setDoc(userRef, { displayName: user.displayName, email: user.email, photoURL: user.photoURL, role, createdAt: serverTimestamp() });
                 }
             } else {
                 currentUserRole = 'user';
@@ -489,14 +357,14 @@
         const uploadArea = uploadContainer.parentElement;
         if (currentUser) {
             loginBtn.style.display = 'none';
-            userMenuButton.style.display = 'block';
-            userMenuPic.src = currentUser.photoURL;
+            userProfileArea.style.display = 'flex';
+            authUserName.textContent = currentUser.displayName;
+            authUserPic.src = currentUser.photoURL;
             uploadArea.classList.remove('disabled');
             uploadPrompt.innerHTML = '<strong>Drag & drop</strong> screenshots, or <strong>click to select</strong>.';
         } else {
             loginBtn.style.display = 'block';
-            userMenuButton.style.display = 'none';
-            userMenu.classList.remove('visible');
+            userProfileArea.style.display = 'none';
             uploadArea.classList.add('disabled');
             uploadPrompt.innerHTML = 'Please <strong>login</strong> to upload screenshots.';
         }
@@ -506,6 +374,77 @@
     // ===============================================================
     // IMAGE GALLERY LOGIC
     // ===============================================================
+    async function checkIsMinecraft(base64ImageData) {
+        const apiKey = "";
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+        const payload = { contents: [{ parts: [ { text: "Is this image a screenshot from the video game Minecraft, or is it a Minecraft-related artwork? Answer with only 'yes' or 'no'." }, { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }]}] };
+        try {
+            const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!response.ok) return true; 
+            const result = await response.json();
+            const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+            return !(text && text.toLowerCase().trim().includes('no'));
+        } catch (error) { return true; }
+    }
+
+    async function handleFiles(files) {
+        if (!currentUser) return;
+        uploadMessage.textContent = `Analyzing ${files.length} file(s)...`;
+        
+        const fileCheckPromises = Array.from(files).map(async file => {
+            if (file.type.startsWith('image/')) {
+                const base64 = await toBase64(file);
+                if (await checkIsMinecraft(base64)) return file;
+                uploadMessage.textContent = `Rejected: '${file.name}' may not be a Minecraft image.`;
+                setTimeout(() => uploadMessage.textContent = '', 4000);
+                return null;
+            }
+            return null;
+        });
+
+        const validFiles = (await Promise.all(fileCheckPromises)).filter(Boolean);
+
+        if (validFiles.length === 0) {
+            if (files.length > 0) uploadMessage.textContent = 'No valid Minecraft images were detected.';
+            setTimeout(() => { if (uploadMessage.textContent !== 'Upload successful!') uploadMessage.textContent = '' }, 3000);
+            return;
+        }
+
+        uploadMessage.textContent = `Uploading ${validFiles.length} valid file(s)...`;
+        const uploadPromises = validFiles.map(file => {
+            const formData = new FormData();
+            formData.append('image', file);
+            return fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(result => {
+                    if (!result.success) throw new Error(result.error?.message || 'ImgBB upload failed.');
+                    return addDoc(collection(db, "images"), {
+                        imageUrl: result.data.url, uploaderUid: currentUser.uid, uploaderName: currentUser.displayName, uploaderPic: currentUser.photoURL, createdAt: serverTimestamp(), hidden: false, likes: []
+                    });
+                });
+        });
+        
+        try {
+            await Promise.all(uploadPromises);
+            uploadMessage.textContent = 'Upload successful!';
+        } catch (error) {
+            uploadMessage.textContent = `Upload error: ${error.message}`;
+        }
+        setTimeout(() => { uploadMessage.textContent = ''; }, 5000);
+    }
+    
+    function fetchAndDisplayImages() {
+        if (unsubscribeFromImages) unsubscribeFromImages();
+        let q = collection(db, "images");
+        if (currentUserRole !== 'admin') q = query(q, where("hidden", "==", false));
+        
+        unsubscribeFromImages = onSnapshot(q, (snapshot) => {
+            allImages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            allImages.sort((a, b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0));
+            renderPage();
+        }, (error) => console.error("Error fetching images: ", error));
+    }
+
     function renderPage() {
         screenshotGrid.innerHTML = '';
         const totalPages = Math.ceil(allImages.length / IMAGES_PER_PAGE) || 1;
@@ -526,15 +465,7 @@
                 img.alt = 'Minecraft Screenshot';
                 img.className = 'main-img';
                 img.loading = 'lazy';
-                img.addEventListener('click', () => {
-                    openLightbox(imgData.imageUrl);
-                    if (!viewedImages.has(imgData.id)) {
-                        viewedImages.add(imgData.id);
-                        sessionStorage.setItem('viewedImages', JSON.stringify([...viewedImages]));
-                        const imageRef = doc(db, "images", imgData.id);
-                        updateDoc(imageRef, { views: increment(1) });
-                    }
-                });
+                img.addEventListener('click', () => openLightbox(imgData.imageUrl));
 
                 const uploaderDiv = document.createElement('div');
                 uploaderDiv.className = 'uploader-info';
@@ -547,13 +478,8 @@
                         <span class="time-ago">${timeAgo(imgData.createdAt?.toDate())}</span>
                     </div>`;
 
-                const statsSection = document.createElement('div');
-                statsSection.className = 'stats-section';
-                const viewStat = document.createElement('div');
-                viewStat.className = 'stat';
-                viewStat.innerHTML = `<i class="fas fa-eye"></i> <span>${imgData.views || 0}</span>`;
                 const likeSection = document.createElement('div');
-                likeSection.className = 'like-section stat';
+                likeSection.className = 'like-section';
                 const likeCount = (imgData.likes || []).length;
                 const likerId = currentUser ? currentUser.uid : anonymousUserId;
                 likeSection.innerHTML = `<i class="fas fa-heart"></i> <span class="like-count">${likeCount}</span>`;
@@ -562,8 +488,7 @@
                 }
                 likeSection.onclick = (e) => { e.stopPropagation(); toggleLike(imgData.id); };
                 
-                statsSection.append(viewStat, likeSection);
-                uploaderDiv.append(uploaderDetails, statsSection);
+                uploaderDiv.append(uploaderDetails, likeSection);
                 item.append(img, uploaderDiv);
                 
                 const isOwner = currentUser?.uid === imgData.uploaderUid;
@@ -595,43 +520,106 @@
         renderPaginationControls(totalPages);
     }
     
-    // ===============================================================
-    // EVENT LISTENERS SETUP
-    // ===============================================================
+    // --- LIGHTBOX & ZOOM LOGIC ---
+    function openLightbox(src) { lightboxImg.src = src; lightbox.classList.add('visible'); resetZoom(); }
+    function closeLightbox() { lightbox.classList.remove('visible'); lightboxImg.src = ''; }
+    function changeZoom(amount) { currentZoom = Math.max(1, currentZoom + amount); updateZoom(); }
+    function resetZoom() { currentZoom = 1; translateX = 0; translateY = 0; updateZoom(); }
+    function updateZoom() { lightboxImg.style.transform = `scale(${currentZoom}) translate(${translateX || 0}px, ${translateY || 0}px)`; }
+    
+    // --- ADMIN & DELETION LOGIC ---
+    async function toggleImageVisibility(docId, shouldBeHidden) { await updateDoc(doc(db, "images", docId), { hidden: shouldBeHidden }); }
+    function confirmDeleteImage(docId) {
+        deleteModal.classList.add('visible');
+        const confirmHandler = () => { deleteImage(docId); cleanup(); };
+        const cancelHandler = () => cleanup();
+        const cleanup = () => {
+            deleteModal.classList.remove('visible');
+            modalConfirmBtn.removeEventListener('click', confirmHandler);
+            modalCancelBtn.removeEventListener('click', cancelHandler);
+        };
+        modalConfirmBtn.addEventListener('click', confirmHandler);
+        modalCancelBtn.addEventListener('click', cancelHandler);
+    }
+    async function deleteImage(docId) {
+        try { await deleteDoc(doc(db, "images", docId)); } catch (error) { console.error("Error deleting image: ", error); }
+    }
+
+    // --- LIKE LOGIC ---
+    async function toggleLike(imageId) {
+        const likerId = currentUser ? currentUser.uid : anonymousUserId;
+        if (!likerId) return;
+
+        const imageRef = doc(db, "images", imageId);
+        try {
+            await runTransaction(db, async (transaction) => {
+                const imageDoc = await transaction.get(imageRef);
+                if (!imageDoc.exists()) throw "Document does not exist!";
+                
+                const likes = imageDoc.data().likes || [];
+                const likeIndex = likes.indexOf(likerId);
+
+                if (likeIndex === -1) {
+                    likes.push(likerId);
+                } else {
+                    likes.splice(likeIndex, 1);
+                }
+                transaction.update(imageRef, { likes });
+            });
+        } catch (e) {
+            console.error("Like transaction failed: ", e);
+        }
+    }
+
+    // --- PAGINATION LOGIC ---
+    function renderPaginationControls(totalPages) {
+        pageNumbersContainer.innerHTML = '';
+        for (let i = 1; i <= totalPages; i++) {
+            const pageNum = document.createElement('span');
+            pageNum.className = 'page-number';
+            pageNum.textContent = i;
+            if (i === currentPage) pageNum.classList.add('active');
+            pageNum.addEventListener('click', () => { currentPage = i; renderPage(); });
+            pageNumbersContainer.appendChild(pageNum);
+        }
+        prevPageBtn.disabled = currentPage === 1;
+        nextPageBtn.disabled = currentPage === totalPages || totalPages === 0;
+    }
+    
     function setupEventListeners() {
         loginBtn.addEventListener('click', () => signInWithPopup(auth, provider).catch(e => console.error("Sign-In Error:", e)));
-        logoutBtnMenu.addEventListener('click', () => signOut(auth));
+        logoutBtn.addEventListener('click', () => signOut(auth));
         
-        userMenuButton.addEventListener('click', (e) => { e.stopPropagation(); userMenu.classList.toggle('visible'); });
-        document.addEventListener('click', (e) => { if (!userMenu.contains(e.target) && !userMenuButton.contains(e.target)) userMenu.classList.remove('visible'); });
-
         galleryBtn.addEventListener('click', () => {
             gallerySection.classList.toggle('visible');
-            if(gallerySection.classList.contains('visible')) setTimeout(() => gallerySection.scrollIntoView({ behavior: 'smooth' }), 10);
+            if(gallerySection.classList.contains('visible')){
+                setTimeout(() => gallerySection.scrollIntoView({ behavior: 'smooth' }), 10);
+            }
         });
 
-        whitelistBtn.addEventListener('click', () => whitelistForm.classList.toggle('visible'));
-        
-        mcUsernameInput.addEventListener('input', () => {
-            const username = mcUsernameInput.value;
-            mcUsernameInput.value = username.replace(/[^a-zA-Z0-9_]/g, '');
-            
-            clearTimeout(skinUpdateTimeout);
-            skinUpdateTimeout = setTimeout(async () => {
-                const finalUsername = mcUsernameInput.value.trim();
-                const defaultSkinUrl = 'https://i.pinimg.com/736x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg';
-                if (!finalUsername || finalUsername.length < 3) { mcSkinImg.src = defaultSkinUrl; return; }
-                try {
-                    const response = await fetch(`https://corsproxy.io/?https://api.mojang.com/users/profiles/minecraft/${finalUsername}`);
-                    if (!response.ok) throw new Error('User not found');
-                    const data = await response.json();
-                    if (!data || !data.id) throw new Error('Invalid UUID');
-                    mcSkinImg.src = `https://crafatar.com/avatars/${data.id}?size=40&overlay`;
-                } catch (error) { mcSkinImg.src = defaultSkinUrl; }
-            }, 500);
+        whitelistBtn.addEventListener('click', () => {
+            whitelistForm.classList.toggle('visible')
         });
         
-        mcSkinImg.onerror = function() { this.src = 'https://i.pinimg.com/736x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg'; };
+        mcUsernameInput.addEventListener('input', () => {
+            clearTimeout(skinUpdateTimeout);
+            skinUpdateTimeout = setTimeout(async () => {
+                const username = mcUsernameInput.value.trim();
+                const defaultSkinUrl = 'https://crafatar.com/avatars/steve?size=40&overlay';
+                if (!username) {
+                    mcSkinImg.src = defaultSkinUrl;
+                    return;
+                }
+                try {
+                    const response = await fetch(`https://corsproxy.io/?https://api.mojang.com/users/profiles/minecraft/${username}`);
+                    if (!response.ok) throw new Error('User not found');
+                    const data = await response.json();
+                    mcSkinImg.src = `https://crafatar.com/avatars/${data.id}?size=40&overlay`;
+                } catch (error) {
+                    mcSkinImg.src = defaultSkinUrl;
+                }
+            }, 500);
+        });
 
         sendWhitelistBtn.addEventListener('click', async () => {
             const username = mcUsernameInput.value.trim();
@@ -651,39 +639,11 @@
                 if (!response.ok) throw new Error(`Discord API error: ${response.status}`);
                 whitelistMessage.textContent = "Request sent successfully!";
                 mcUsernameInput.value = '';
-                setTimeout(() => whitelistForm.classList.remove('visible'), 1500);
             } catch (error) {
+                console.error("Webhook send error:", error);
                 whitelistMessage.textContent = "Failed to send request.";
             }
             setTimeout(() => { whitelistMessage.textContent = ''; }, 5000);
-        });
-
-        saveNameBtn.addEventListener('click', async () => {
-            const newName = changeNameInput.value.trim();
-            if (!newName || newName.length < 3) { nameChangeMessage.textContent = "Name must be at least 3 characters."; return; }
-            if (!currentUser) return;
-            
-            const userRef = doc(db, "users", currentUser.uid);
-            const userDoc = await getDoc(userRef);
-            if (!userDoc.exists()) return;
-
-            const oneWeek = 7 * 24 * 60 * 60 * 1000;
-            const lastChange = userDoc.data().last_name_change?.toDate() || 0;
-            const now = new Date();
-
-            if (now - lastChange < oneWeek) {
-                const timeLeft = oneWeek - (now - lastChange);
-                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                nameChangeMessage.textContent = `You can change your name in ${days}d ${hours}h.`;
-                return;
-            }
-
-            await updateDoc(userRef, { displayName: newName, last_name_change: serverTimestamp() });
-            nameChangeMessage.textContent = "Name changed successfully!";
-            userCache.delete(currentUser.uid);
-            fetchAndDisplayImages();
-            setTimeout(() => nameChangeMessage.textContent = '', 4000);
         });
 
         uploadContainer.addEventListener('click', () => {
@@ -693,6 +653,7 @@
         });
         
         fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+        
         prevPageBtn.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderPage(); } });
         nextPageBtn.addEventListener('click', () => {
             const totalPages = Math.ceil(allImages.length / IMAGES_PER_PAGE);
@@ -709,17 +670,9 @@
         });
         window.addEventListener('mouseup', () => { isPanning = false; lightboxImg.classList.remove('zooming'); });
         window.addEventListener('mousemove', (e) => { if (isPanning) { translateX = e.clientX - startX; translateY = e.clientY - startY; updateZoom(); } });
-   
-        // Music Player Listeners
-        playPauseBtn.addEventListener('click', togglePlayPause);
-        prevBtn.addEventListener('click', playPrev);
-        nextBtn.addEventListener('click', playNext);
-        audioPlayer.addEventListener('timeupdate', updateProgress);
-        audioPlayer.addEventListener('ended', playNext);
-        progressBar.addEventListener('click', setProgress);
-        volumeSlider.addEventListener('input', (e) => audioPlayer.volume = e.target.value);
     }
 
+    // --- START THE APP ---
     init();
 
 </script>
