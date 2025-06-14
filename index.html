@@ -178,7 +178,7 @@
                 <div class="collapsible-inner">
                     <div class="whitelist-inner-form">
                         <div class="mc-input-container">
-                            <img id="mc-skin-img" src="https://crafatar.com/avatars/steve?size=40&overlay" alt="MC Skin" >
+                            <img id="mc-skin-img" src="https://i.pinimg.com/736x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg" alt="MC Skin" style="background:#222;">
                             <input type="text" id="mc-username-input" placeholder="Username">
                         </div>
                         <button id="send-whitelist-btn"><i class="fas fa-paper-plane"></i></button>
@@ -243,7 +243,7 @@
     // --- Firebase SDK Imports ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, addDoc, serverTimestamp, query, where, deleteDoc, updateDoc, runTransaction } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, addDoc, serverTimestamp, query, where, deleteDoc, updateDoc, runTransaction, increment } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
     // --- ImgBB CONFIGURATION ---
     const IMGBB_API_KEY = "f4674c56e25d7969059afe104aa60375";
@@ -465,7 +465,7 @@
                 img.alt = 'Minecraft Screenshot';
                 img.className = 'main-img';
                 img.loading = 'lazy';
-                img.addEventListener('click', () => openLightbox(imgData.imageUrl));
+                img.addEventListener('click', () => openLightbox(imgData.imageUrl, imgData.id));
 
                 const uploaderDiv = document.createElement('div');
                 uploaderDiv.className = 'uploader-info';
@@ -487,6 +487,11 @@
                     likeSection.classList.add('liked');
                 }
                 likeSection.onclick = (e) => { e.stopPropagation(); toggleLike(imgData.id); };
+                
+                const viewsDiv = document.createElement('div');
+                viewsDiv.className = 'views-section';
+                viewsDiv.innerHTML = `<i class="fas fa-eye"></i> <span class="views-count">${imgData.views || 0}</span>`;
+                uploaderDiv.appendChild(viewsDiv);
                 
                 uploaderDiv.append(uploaderDetails, likeSection);
                 item.append(img, uploaderDiv);
@@ -521,7 +526,16 @@
     }
     
     // --- LIGHTBOX & ZOOM LOGIC ---
-    function openLightbox(src) { lightboxImg.src = src; lightbox.classList.add('visible'); resetZoom(); }
+    function openLightbox(src, imgId) {
+        lightboxImg.src = src;
+        lightbox.classList.add('visible');
+        resetZoom();
+        // Increment views in Firestore
+        if (imgId) {
+            const imageRef = doc(db, "images", imgId);
+            updateDoc(imageRef, { views: increment(1) }).catch(() => {});
+        }
+    }
     function closeLightbox() { lightbox.classList.remove('visible'); lightboxImg.src = ''; }
     function changeZoom(amount) { currentZoom = Math.max(1, currentZoom + amount); updateZoom(); }
     function resetZoom() { currentZoom = 1; translateX = 0; translateY = 0; updateZoom(); }
@@ -603,22 +617,12 @@
         
         mcUsernameInput.addEventListener('input', () => {
             clearTimeout(skinUpdateTimeout);
-            skinUpdateTimeout = setTimeout(async () => {
+            skinUpdateTimeout = setTimeout(() => {
                 const username = mcUsernameInput.value.trim();
-                const defaultSkinUrl = 'https://crafatar.com/avatars/steve?size=40&overlay';
-                if (!username) {
-                    mcSkinImg.src = defaultSkinUrl;
-                    return;
-                }
-                try {
-                    const response = await fetch(`https://corsproxy.io/?https://api.mojang.com/users/profiles/minecraft/${username}`);
-                    if (!response.ok) throw new Error('User not found');
-                    const data = await response.json();
-                    mcSkinImg.src = `https://crafatar.com/avatars/${data.id}?size=40&overlay`;
-                } catch (error) {
-                    mcSkinImg.src = defaultSkinUrl;
-                }
-            }, 500);
+                mcSkinImg.src = username
+                    ? `https://crafatar.com/renders/head/${username}?scale=4&overlay`
+                    : 'https://i.pinimg.com/736x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg';
+            }, 300);
         });
 
         sendWhitelistBtn.addEventListener('click', async () => {
