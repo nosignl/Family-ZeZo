@@ -420,7 +420,7 @@
     }
 
     async function togglePlayPause() {
-        if (audioPlayer.paused) {
+        if (audioPlayer.paused && audioPlayer.src) {
             await playTrack();
         } else {
             pauseTrack();
