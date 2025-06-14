@@ -302,8 +302,8 @@
 
     // --- Upload Logic ---
     uploadArea.addEventListener('click', () => {
-        if (IMGBB_API_KEY === "f4674c56e25d7969059afe104aa60375") {
-            uploadMessage.textContent = "Error: ImgBB API Key is not configured in the script.";
+        if (IMGBB_API_KEY === "YOUR_IMGBB_API_KEY") {
+            uploadMessage.textContent = "Error: ImgBB API Key is not configured. Please add your key to the script.";
             return;
         }
         if (!uploadArea.classList.contains('disabled')) fileInput.click();
