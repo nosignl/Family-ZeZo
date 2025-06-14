@@ -68,12 +68,15 @@
         #screenshot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 40px; min-height: 250px; }
         .screenshot-item { position: relative; border-radius: 15px; overflow: hidden; border: 2px solid rgba(168, 85, 247, 0.4); box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; }
         .screenshot-item:hover { transform: scale(1.05); box-shadow: 0 0 20px #a855f7, 0 8px 30px rgba(0,0,0,0.4); }
-        .screenshot-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .screenshot-item img.main-img { width: 100%; height: 100%; object-fit: cover; display: block; }
         
         .uploader-info { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0, 0, 0, 0.6); color: white; padding: 8px; display: flex; align-items: center; gap: 8px; transition: opacity 0.3s; opacity: 0; }
         .screenshot-item:hover .uploader-info { opacity: 1; }
         .uploader-info img { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #c084fc; }
-        .uploader-info span { font-size: 0.9em; font-weight: bold; text-shadow: 1px 1px 3px black; }
+        .uploader-info-text { display: flex; flex-direction: column; align-items: flex-start; }
+        .uploader-info-text .name { font-size: 0.9em; font-weight: bold; text-shadow: 1px 1px 3px black; }
+        .uploader-info-text .time-ago { font-size: 0.75em; color: #bbb; }
+
 
         .image-controls { position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 8px; opacity: 0; transition: opacity 0.3s; }
         .screenshot-item:hover .image-controls { opacity: 1; }
@@ -155,7 +158,7 @@
           <a href="https://tiktok.com/@czezo" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
         </div>
         
-        <!-- NEW Whitelist Section -->
+        <!-- Whitelist Section -->
         <div class="whitelist-section">
             <h3>Minecraft Whitelist</h3>
             <button id="whitelist-btn" class="whitelist-btn">Whitelist</button>
@@ -289,6 +292,30 @@
     let startX, startY, translateX, translateY;
     let skinUpdateTimeout;
 
+    // ===============================================================
+    // TIME AGO HELPER FUNCTION
+    // ===============================================================
+    function timeAgo(date) {
+        if (!date) return 'a moment ago';
+        const seconds = Math.floor((new Date() - date) / 1000);
+        if (seconds < 5) return 'just now';
+        const intervals = {
+            year: 31536000,
+            month: 2592000,
+            day: 86400,
+            hour: 3600,
+            minute: 60,
+            second: 1
+        };
+        for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+            const interval = Math.floor(seconds / secondsInUnit);
+            if (interval >= 1) {
+                return interval + ` ${unit}` + (interval === 1 ? '' : 's') + ' ago';
+            }
+        }
+        return Math.floor(seconds) + ' seconds ago';
+    }
+
 
     // ===============================================================
     // AUTHENTICATION LOGIC
@@ -297,38 +324,31 @@
     logoutBtn.addEventListener('click', () => signOut(auth).catch(e => console.error("Sign Out Error:", e)));
 
     onAuthStateChanged(auth, async (user) => {
+        currentUser = user;
         if (user) {
-            currentUser = user;
             await handleUserLogin(user);
         } else {
-            currentUser = null;
             handleUserLogout();
         }
     });
 
     async function handleUserLogin(user) {
-        // Update top-right auth area
         loginBtn.style.display = 'none';
         userProfileArea.style.display = 'flex';
         authUserName.textContent = user.displayName;
         authUserPic.src = user.photoURL;
-
-        // Main profile card remains static and does NOT update with user info
 
         const userRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userRef);
 
         const role = user.email === ADMIN_EMAIL ? 'admin' : 'user';
         if (!userDoc.exists()) {
-            await setDoc(userRef, {
-                displayName: user.displayName, email: user.email, photoURL: user.photoURL, role, createdAt: serverTimestamp()
-            });
+            await setDoc(userRef, { displayName: user.displayName, email: user.email, photoURL: user.photoURL, role, createdAt: serverTimestamp() });
         } else if (userDoc.data().role !== role) {
             await updateDoc(userRef, { role });
         }
         currentUserRole = role;
         
-        console.log(`User logged in. Role: ${currentUserRole}`);
         uploadArea.classList.remove('disabled');
         uploadPrompt.innerHTML = '<strong>Drag & drop</strong> screenshots, or <strong>click to select</strong>.';
         fetchAndDisplayImages();
@@ -338,38 +358,38 @@
         loginBtn.style.display = 'block';
         userProfileArea.style.display = 'none';
         currentUserRole = 'user';
-
         uploadArea.classList.add('disabled');
         uploadPrompt.textContent = 'Please login to upload screenshots.';
-        screenshotGrid.innerHTML = '<p style="color: #aaa; grid-column: 1 / -1;">Please login to view the gallery.</p>';
         if (unsubscribeFromImages) unsubscribeFromImages();
+        allImages = [];
+        renderPage();
     }
 
     // ===============================================================
-    // WHITELIST FORM LOGIC
+    // WHITELIST FORM LOGIC (FIXED)
     // ===============================================================
-    whitelistBtn.addEventListener('click', () => {
-        whitelistForm.classList.toggle('visible');
-    });
+    const defaultSkinUrl = 'https://crafatar.com/avatars/steve?size=40&overlay';
+    whitelistBtn.addEventListener('click', () => whitelistForm.classList.toggle('visible'));
 
     mcUsernameInput.addEventListener('input', () => {
         clearTimeout(skinUpdateTimeout);
         skinUpdateTimeout = setTimeout(() => {
             const username = mcUsernameInput.value.trim();
             if (username) {
-                mcSkinImg.src = `https://crafatar.com/avatars/${username}?size=40&overlay`;
+                const tempImg = new Image();
+                tempImg.onload = () => { mcSkinImg.src = tempImg.src; };
+                tempImg.onerror = () => { mcSkinImg.src = defaultSkinUrl; };
+                tempImg.src = `https://crafatar.com/avatars/${username}?size=40&overlay`;
             } else {
-                mcSkinImg.src = 'https://crafatar.com/avatars/steve?size=40&overlay'; // Default skin
+                mcSkinImg.src = defaultSkinUrl;
             }
         }, 300);
     });
 
     sendWhitelistBtn.addEventListener('click', async () => {
         const username = mcUsernameInput.value.trim();
-        if (!username) {
-            whitelistMessage.textContent = "Please enter a username.";
-            return;
-        }
+        if (!username) { whitelistMessage.textContent = "Please enter a username."; return; }
+        if (!currentUser) { whitelistMessage.textContent = "Please login to send a request."; return; }
 
         whitelistMessage.textContent = "Sending...";
         try {
@@ -377,18 +397,13 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    content: `New whitelist request from **${currentUser?.displayName || 'A user'}**: \`${username}\``,
-                    username: "Whitelist Bot",
-                    avatar_url: "https://i.imgur.com/4M34G3p.png"
+                    content: `New whitelist request from **${currentUser.displayName}** (UID: ${currentUser.uid}): \`${username}\``,
+                    username: "Whitelist Bot", avatar_url: "https://i.imgur.com/4M34G3p.png"
                 })
             });
-
-            if (response.ok) {
-                whitelistMessage.textContent = "Request sent successfully!";
-                mcUsernameInput.value = '';
-            } else {
-                throw new Error(`Discord API error: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`Discord API error: ${response.status}`);
+            whitelistMessage.textContent = "Request sent successfully!";
+            mcUsernameInput.value = '';
         } catch (error) {
             console.error("Webhook send error:", error);
             whitelistMessage.textContent = "Failed to send request.";
@@ -397,12 +412,11 @@
     });
 
     // ===============================================================
-    // IMAGE GALLERY LOGIC
+    // IMAGE GALLERY LOGIC (FIXED)
     // ===============================================================
     uploadArea.addEventListener('click', () => {
         if (IMGBB_API_KEY === "YOUR_IMGBB_API_KEY") {
-            uploadMessage.textContent = "Error: ImgBB API Key is not configured.";
-            return;
+            uploadMessage.textContent = "Error: ImgBB API Key is not configured."; return;
         }
         if (!uploadArea.classList.contains('disabled')) fileInput.click();
     });
@@ -411,17 +425,20 @@
 
     async function handleFiles(files) {
         if (!currentUser) return;
-        uploadMessage.textContent = 'Uploading...';
+        uploadMessage.textContent = `Uploading ${files.length} file(s)...`;
+        
         const uploadPromises = Array.from(files).filter(f => f.type.startsWith('image/')).map(file => {
+            const optimisticId = `optimistic_${Date.now()}_${Math.random()}`;
             const formData = new FormData();
             formData.append('image', file);
             return fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData })
                 .then(res => res.json())
                 .then(result => {
-                    if (!result.success) throw new Error(result.error.message);
-                    return addDoc(collection(db, "images"), {
-                        imageUrl: result.data.url, uploaderUid: currentUser.uid, uploaderName: currentUser.displayName, uploaderPic: currentUser.photoURL, createdAt: serverTimestamp(), hidden: false,
-                    });
+                    if (!result.success) throw new Error(result.error?.message || 'ImgBB upload failed.');
+                    const newImageData = {
+                        imageUrl: result.data.url, uploaderUid: currentUser.uid, uploaderName: currentUser.displayName, uploaderPic: currentUser.photoURL, createdAt: serverTimestamp(), hidden: false
+                    };
+                    return addDoc(collection(db, "images"), newImageData);
                 });
         });
         
@@ -436,6 +453,8 @@
     }
     
     function fetchAndDisplayImages() {
+        if (unsubscribeFromImages) unsubscribeFromImages();
+
         let q = collection(db, "images");
         if (currentUserRole !== 'admin') {
             q = query(q, where("hidden", "==", false));
@@ -443,8 +462,7 @@
 
         unsubscribeFromImages = onSnapshot(q, (snapshot) => {
             allImages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            allImages.sort((a, b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0));
-            currentPage = 1;
+            allImages.sort((a, b) => (b.createdAt?.toDate() || new Date()) - (a.createdAt?.toDate() || new Date()));
             renderPage();
         }, (error) => console.error("Error fetching images: ", error));
     }
@@ -452,10 +470,14 @@
     function renderPage() {
         screenshotGrid.innerHTML = '';
         const totalPages = Math.ceil(allImages.length / IMAGES_PER_PAGE) || 1;
+        
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
         const pageImages = allImages.slice((currentPage - 1) * IMAGES_PER_PAGE, currentPage * IMAGES_PER_PAGE);
 
-        if (pageImages.length === 0 && currentUser) {
-            screenshotGrid.innerHTML = '<p style="color: #aaa; grid-column: 1 / -1;">No screenshots yet. Be the first!</p>';
+        if (pageImages.length === 0) {
+             screenshotGrid.innerHTML = `<p style="color: #aaa; grid-column: 1 / -1;">${currentUser ? 'No screenshots yet. Be the first!' : 'Please login to view the gallery.'}</p>`;
         } else {
             pageImages.forEach(imgData => {
                 const item = document.createElement('div');
@@ -465,12 +487,17 @@
                 const img = document.createElement('img');
                 img.src = imgData.imageUrl;
                 img.alt = 'Minecraft Screenshot';
+                img.className = 'main-img';
                 img.loading = 'lazy';
                 img.addEventListener('click', () => openLightbox(imgData.imageUrl));
 
                 const uploaderDiv = document.createElement('div');
                 uploaderDiv.className = 'uploader-info';
-                uploaderDiv.innerHTML = `<img src="${imgData.uploaderPic}" alt="${imgData.uploaderName}"><span>${imgData.uploaderName}</span>`;
+                uploaderDiv.innerHTML = `<img src="${imgData.uploaderPic}" alt="${imgData.uploaderName}">
+                    <div class="uploader-info-text">
+                        <span class="name">${imgData.uploaderName}</span>
+                        <span class="time-ago">${timeAgo(imgData.createdAt?.toDate())}</span>
+                    </div>`;
                 
                 item.append(img, uploaderDiv);
                 
@@ -480,8 +507,6 @@
                 if(isOwner || isAdmin) {
                     const controls = document.createElement('div');
                     controls.className = 'image-controls';
-
-                    // Delete button for owner or admin
                     const deleteBtn = document.createElement('button');
                     deleteBtn.className = 'control-btn delete-btn';
                     deleteBtn.title = 'Delete';
@@ -489,7 +514,6 @@
                     deleteBtn.onclick = (e) => { e.stopPropagation(); confirmDeleteImage(imgData.id); };
                     
                     if (isAdmin) {
-                        // Hide button only for admin
                         const hideBtn = document.createElement('button');
                         hideBtn.className = 'control-btn hide-btn';
                         hideBtn.title = imgData.hidden ? 'Show' : 'Hide';
@@ -513,68 +537,41 @@
         lightbox.classList.add('visible');
         resetZoom();
     }
-
     function closeLightbox() {
         lightbox.classList.remove('visible');
         lightboxImg.src = '';
     }
-
     function changeZoom(amount) {
         currentZoom = Math.max(1, currentZoom + amount);
         updateZoom();
     }
-    
     function resetZoom() {
         currentZoom = 1;
         translateX = 0;
         translateY = 0;
         updateZoom();
     }
-
     function updateZoom() {
         lightboxImg.style.transform = `scale(${currentZoom}) translate(${translateX || 0}px, ${translateY || 0}px)`;
     }
-
     lightboxClose.addEventListener('click', closeLightbox);
     lightbox.addEventListener('click', (e) => e.target === lightbox && closeLightbox());
     zoomInBtn.addEventListener('click', () => changeZoom(0.2));
     zoomOutBtn.addEventListener('click', () => changeZoom(-0.2));
     zoomResetBtn.addEventListener('click', resetZoom);
-    
     lightboxImg.addEventListener('mousedown', (e) => {
         if (currentZoom > 1) {
-            isPanning = true;
-            startX = e.clientX - (translateX || 0);
-            startY = e.clientY - (translateY || 0);
-            lightboxImg.classList.add('zooming');
+            isPanning = true; startX = e.clientX - (translateX || 0); startY = e.clientY - (translateY || 0); lightboxImg.classList.add('zooming');
         }
     });
-
-    window.addEventListener('mouseup', () => {
-        isPanning = false;
-        lightboxImg.classList.remove('zooming');
-    });
-    
-    window.addEventListener('mousemove', (e) => {
-        if (isPanning) {
-            translateX = e.clientX - startX;
-            translateY = e.clientY - startY;
-            updateZoom();
-        }
-    });
-
+    window.addEventListener('mouseup', () => { isPanning = false; lightboxImg.classList.remove('zooming'); });
+    window.addEventListener('mousemove', (e) => { if (isPanning) { translateX = e.clientX - startX; translateY = e.clientY - startY; updateZoom(); } });
 
     // --- ADMIN & DELETION LOGIC ---
-    async function toggleImageVisibility(docId, shouldBeHidden) {
-        await updateDoc(doc(db, "images", docId), { hidden: shouldBeHidden });
-    }
-    
+    async function toggleImageVisibility(docId, shouldBeHidden) { await updateDoc(doc(db, "images", docId), { hidden: shouldBeHidden }); }
     function confirmDeleteImage(docId) {
         deleteModal.classList.add('visible');
-        const confirmHandler = () => {
-            deleteImage(docId);
-            cleanup();
-        };
+        const confirmHandler = () => { deleteImage(docId); cleanup(); };
         const cancelHandler = () => cleanup();
         const cleanup = () => {
             deleteModal.classList.remove('visible');
@@ -584,14 +581,8 @@
         modalConfirmBtn.addEventListener('click', confirmHandler);
         modalCancelBtn.addEventListener('click', cancelHandler);
     }
-    
     async function deleteImage(docId) {
-        try {
-            await deleteDoc(doc(db, "images", docId));
-            console.log("Image reference deleted from Firestore.");
-        } catch (error) {
-            console.error("Error deleting image from Firestore: ", error);
-        }
+        try { await deleteDoc(doc(db, "images", docId)); } catch (error) { console.error("Error deleting image: ", error); }
     }
 
     // --- PAGINATION LOGIC ---
