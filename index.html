@@ -286,6 +286,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
 <!-- START: Screenshot Gallery Script -->
 <script>
+const BACKEND_URL = 'http://tirinox.serveminecraft.net:24565';
+
 document.addEventListener('DOMContentLoaded', () => {
     const uploadArea = document.getElementById('upload-area');
     const fileInput = document.getElementById('file-input');
@@ -351,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // IMPORTANT: Replace '/upload' with the actual URL of your Python backend server
-            const response = await fetch('/upload', {
+            const response = await fetch(`${BACKEND_URL}/upload`, {
                 method: 'POST',
                 body: formData
             });
@@ -375,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchAndDisplayImages() {
         try {
             // IMPORTANT: Replace '/get-images' with your actual server endpoint
-            const response = await fetch('/get-images');
+            const response = await fetch(`${BACKEND_URL}/get-images`);
             if (!response.ok) throw new Error('Failed to fetch images.');
             
             allImages = await response.json(); // Expects an array of image URLs
