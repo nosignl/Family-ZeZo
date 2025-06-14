@@ -7,15 +7,15 @@
     <link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Base and Animation Styles (largely from original file) */
+        /* Base and Animation Styles */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body, html { height: 100%; }
-        body { min-height: 100vh; display: flex; justify-content: center; align-items: center; color: #fff; text-align: center; position: relative; overflow-x: hidden; background: linear-gradient(180deg, #181b2c 0%, #232946 100%); }
+        body { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; text-align: center; position: relative; overflow-x: hidden; background: linear-gradient(180deg, #181b2c 0%, #232946 100%); padding-top: 20px; padding-bottom: 20px; }
         .star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; opacity: .85; pointer-events: none; z-index: 0; animation: starFall linear; }
         @keyframes starFall { 0% { opacity: .9; transform: translateY(0) scale(1) } 80% { opacity: 1; transform: translateY(90vh) scale(1.2) } 100% { opacity: 0; transform: translateY(100vh) scale(.7) } }
         
         /* Profile Card Styles */
-        .profile { background: linear-gradient(135deg, rgba(168, 85, 247, .18) 0, rgba(147, 51, 234, .18) 100%); padding: 32px 28px; border-radius: 28px; max-width: 370px; box-shadow: 0 0 32px 0 rgba(168, 85, 247, .18), 0 8px 32px 0 rgba(0,0,0,.25); position: relative; border: 2px solid rgba(168, 85, 247, .25); overflow: hidden; animation: profileFadeIn 1.2s cubic-bezier(.77,0,.18,1) both; transition: box-shadow .5s, border .5s, background .5s; z-index: 1; margin-top: 5vh; }
+        .profile { background: linear-gradient(135deg, rgba(168, 85, 247, .18) 0, rgba(147, 51, 234, .18) 100%); padding: 32px 28px; border-radius: 28px; width: 90%; max-width: 370px; box-shadow: 0 0 32px 0 rgba(168, 85, 247, .18), 0 8px 32px 0 rgba(0,0,0,.25); position: relative; border: 2px solid rgba(168, 85, 247, .25); overflow: hidden; animation: profileFadeIn 1.2s cubic-bezier(.77,0,.18,1) both; transition: box-shadow .5s, border .5s, background .5s; z-index: 1; margin-top: 5vh; }
         .profile:hover { box-shadow: 0 0 48px 0 #a855f7, 0 8px 48px 0 #9333ea; border: 2.5px solid #a855f7; background: linear-gradient(120deg, rgba(168, 85, 247, .28) 0, rgba(147, 51, 234, .28) 100%); }
         @keyframes profileFadeIn { 0% { opacity: 0; transform: scale(.92) translateY(40px); filter: blur(6px) } 100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0) } }
         .avatar-container { position: relative; display: inline-block; width: 116px; height: 116px; margin: 0 auto; }
@@ -29,57 +29,17 @@
         .social-icons a { color: #fff; text-decoration: none; margin: 0 10px; font-size: 1.4em; display: inline-block; transition: transform .4s ease, color .4s ease; }
         .social-icons a:hover { color: #c084fc; transform: scale(1.3) rotate(5deg); }
 
-        /* NEW: Auth Section Styles */
-        .auth-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1001;
-        }
-        .auth-btn {
-            background: linear-gradient(90deg, #a855f7 60%, #c084fc 100%);
-            color: #fff;
-            border: 2px solid #a855f7;
-            padding: 10px 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-family: 'Minecraftia', sans-serif;
-            font-size: 1em;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 12px #a855f7cc;
-        }
-        .auth-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 20px #a855f7;
-        }
-        #user-profile-area {
-            display: none; /* Hidden by default */
-            align-items: center;
-            gap: 15px;
-            background-color: rgba(24, 27, 44, 0.7);
-            padding: 8px 15px;
-            border-radius: 50px;
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            backdrop-filter: blur(5px);
-        }
-        #user-profile-area img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid #c084fc;
-        }
-        #user-profile-area #auth-user-name {
-            font-weight: bold;
-        }
-        #logout-btn {
-            background: #e53e3e;
-            color: white;
-            padding: 8px 12px;
-            border: none;
-        }
+        /* Auth Section Styles */
+        .auth-container { position: fixed; top: 20px; right: 20px; z-index: 1001; }
+        .auth-btn { background: linear-gradient(90deg, #a855f7 60%, #c084fc 100%); color: #fff; border: 2px solid #a855f7; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-family: 'Minecraftia', sans-serif; font-size: 1em; transition: all 0.3s ease; box-shadow: 0 2px 12px #a855f7cc; }
+        .auth-btn:hover { transform: scale(1.05); box-shadow: 0 4px 20px #a855f7; }
+        #user-profile-area { display: none; /* Hidden by default */ align-items: center; gap: 15px; background-color: rgba(24, 27, 44, 0.7); padding: 8px 15px; border-radius: 50px; border: 1px solid rgba(168, 85, 247, 0.3); backdrop-filter: blur(5px); }
+        #user-profile-area img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #c084fc; }
+        #user-profile-area #auth-user-name { font-weight: bold; }
+        #logout-btn { background: #e53e3e; color: white; padding: 8px 12px; border: none; }
 
         /* Screenshot Gallery Styles */
-        .screenshot-gallery-container { width: 100%; max-width: 1200px; margin: 60px auto; padding: 40px 20px; background: linear-gradient(135deg, rgba(24, 27, 44, 0.5) 0%, rgba(35, 41, 70, 0.5) 100%); backdrop-filter: blur(10px); border-radius: 28px; border: 2px solid rgba(168, 85, 247, 0.25); box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); z-index: 1; position: relative; }
+        .screenshot-gallery-container { width: 90%; max-width: 1200px; margin: 60px auto; padding: 40px 20px; background: linear-gradient(135deg, rgba(24, 27, 44, 0.5) 0%, rgba(35, 41, 70, 0.5) 100%); backdrop-filter: blur(10px); border-radius: 28px; border: 2px solid rgba(168, 85, 247, 0.25); box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); z-index: 1; position: relative; }
         .screenshot-gallery-container h2 { font-family: 'Minecraftia', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 2em; letter-spacing: 2px; color: #c084fc; text-shadow: 0 0 10px #a855f7, 0 0 20px #9333ea; margin-bottom: 30px; }
         .upload-area { border: 3px dashed rgba(168, 85, 247, 0.6); border-radius: 20px; padding: 40px 20px; text-align: center; cursor: pointer; transition: background-color 0.3s, border-color 0.3s; position: relative; }
         .upload-area.disabled { cursor: not-allowed; background-color: rgba(0,0,0,0.3); border-color: #555; }
@@ -95,7 +55,7 @@
         .screenshot-item:hover { transform: scale(1.05); box-shadow: 0 0 20px #a855f7, 0 8px 30px rgba(0,0,0,0.4); }
         .screenshot-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
         
-        /* NEW: Admin Controls on Images */
+        /* Admin Controls on Images */
         .admin-controls { position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 8px; }
         .admin-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.1em; padding: 5px; border-radius: 5px; transition: background 0.2s, color 0.2s; }
         .admin-btn.hide-btn:hover { background: #facc15; color: black; }
@@ -103,72 +63,42 @@
         .screenshot-item.hidden-by-admin { opacity: 0.4; border-color: #facc15; }
         .screenshot-item.hidden-by-admin .admin-btn.hide-btn { color: #facc15; }
 
-        /* REDESIGNED: Pagination Controls */
-        .pagination-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 40px;
-            font-family: 'Minecraftia', sans-serif;
-            gap: 10px;
-        }
-        .pagination-btn {
-            font-family: inherit;
-            font-size: 1em;
-            background: linear-gradient(90deg, #9333ea 60%, #a855f7 100%);
-            border: 2px solid #a855f7;
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-        }
-        .pagination-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px #a855f7;
-            background: linear-gradient(90deg, #a855f7 60%, #c084fc 100%);
-        }
-        .pagination-btn:disabled {
-            background: #4a5568;
-            border-color: #718096;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-        #page-numbers {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .page-number {
-            font-size: 1.2em;
-            color: #aaa;
-            padding: 5px 10px;
-            cursor: pointer;
-            transition: color 0.2s, transform 0.2s;
-        }
-        .page-number:hover {
-            color: #c084fc;
-            transform: scale(1.1);
-        }
-        .page-number.active {
-            color: #fff;
-            background-color: rgba(168, 85, 247, 0.3);
-            border-radius: 5px;
-            font-weight: bold;
-        }
+        /* Pagination Controls */
+        .pagination-controls { display: flex; justify-content: center; align-items: center; margin-top: 40px; font-family: 'Minecraftia', sans-serif; gap: 10px; }
+        .pagination-btn { font-family: inherit; font-size: 1em; background: linear-gradient(90deg, #9333ea 60%, #a855f7 100%); border: 2px solid #a855f7; color: #fff; padding: 8px 16px; border-radius: 10px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; }
+        .pagination-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 15px #a855f7; background: linear-gradient(90deg, #a855f7 60%, #c084fc 100%); }
+        .pagination-btn:disabled { background: #4a5568; border-color: #718096; cursor: not-allowed; opacity: 0.6; }
+        #page-numbers { display: flex; align-items: center; gap: 5px; }
+        .page-number { font-size: 1.2em; color: #aaa; padding: 5px 10px; cursor: pointer; transition: color 0.2s, transform 0.2s; }
+        .page-number:hover { color: #c084fc; transform: scale(1.1); }
+        .page-number.active { color: #fff; background-color: rgba(168, 85, 247, 0.3); border-radius: 5px; font-weight: bold; }
+
+        /* Deletion Confirmation Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: none; /* Hidden by default */ justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background: #232946; padding: 30px; border-radius: 20px; border: 1px solid #a855f7; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 30px #a855f7; transform: scale(0.9); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; }
+        .modal-overlay.visible { display: flex; }
+        .modal-overlay.visible .modal-content { transform: scale(1); opacity: 1; }
+        .modal-content h3 { font-family: 'Minecraftia', sans-serif; margin-bottom: 15px; color: #c084fc; }
+        .modal-content p { margin-bottom: 25px; color: #ddd; }
+        .modal-buttons { display: flex; justify-content: center; gap: 15px; }
+        .modal-btn { padding: 10px 25px; border-radius: 10px; border: none; font-family: 'Minecraftia', sans-serif; font-size: 1em; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        #modal-confirm-btn { background: #e53e3e; color: white; box-shadow: 0 2px 10px #e53e3e88; }
+        #modal-confirm-btn:hover { transform: scale(1.05); box-shadow: 0 4px 15px #e53e3e; }
+        #modal-cancel-btn { background: #4a5568; color: white; }
+        #modal-cancel-btn:hover { transform: scale(1.05); }
 
         /* Responsive */
         @media (max-width: 600px) {
             .profile { max-width: 90%; }
             .auth-container { top: 10px; right: 10px; }
-            #user-profile-area #auth-user-name { display: none; } /* Hide name on small screens */
+            #user-profile-area #auth-user-name { display: none; /* Hide name on small screens */ }
         }
     </style>
 </head>
 <body>
 <div id="star-sky"></div>
 
-<!-- NEW: Auth Container -->
+<!-- Auth Container -->
 <div class="auth-container">
     <button id="login-btn" class="auth-btn">
         <i class="fab fa-google"></i> Login with Google
@@ -184,10 +114,8 @@
     <div class="profile">
         <div class="avatar-container">
             <div class="avatar-border"></div>
-            <!-- This image will be updated dynamically upon login -->
             <img id="profile-pic" src="https://i.ibb.co/mVDyZMTg/e3fbda5ef554577e5aa1e68d7fb2cda7.jpg" alt="Profile Picture">
         </div>
-        <!-- This name will be updated dynamically upon login -->
         <h1 id="user-name">Z E Z O</h1>
         <p class="quote">Login to see your profile & share screenshots!</p>
         <div class="social-icons" style="margin-top:15px;">
@@ -199,7 +127,6 @@
 
     <div class="screenshot-gallery-container" id="gallery-section">
         <h2>Minecraft Screenshot Gallery</h2>
-        <!-- The 'disabled' class will be removed on login -->
         <div class="upload-area disabled" id="upload-area">
             <input type="file" id="file-input" multiple accept="image/png, image/jpeg">
             <div class="upload-icon">
@@ -209,44 +136,63 @@
         </div>
         <div id="upload-message"></div>
         <div id="screenshot-grid">
-            <!-- Screenshots will appear here from Firebase -->
+            <!-- Screenshots will appear here -->
         </div>
         <div class="pagination-controls">
             <button id="prev-page" class="pagination-btn" disabled>&lt; Prev</button>
-            <div id="page-numbers">
-                <!-- Page numbers will be generated here -->
-            </div>
+            <div id="page-numbers"></div>
             <button id="next-page" class="pagination-btn" disabled>Next &gt;</button>
         </div>
     </div>
 </div>
 
+<!-- Deletion Modal HTML -->
+<div id="delete-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Confirm Deletion</h3>
+        <p>Are you sure you want to permanently delete this image? This action cannot be undone.</p>
+        <div class="modal-buttons">
+            <button id="modal-cancel-btn" class="modal-btn">Cancel</button>
+            <button id="modal-confirm-btn" class="modal-btn">Delete</button>
+        </div>
+    </div>
+</div>
+
+
 <!-- =============================================================== -->
-<!-- IMPORTANT: FIREBASE SDK SCRIPTS -->
+<!-- SCRIPT SECTION -->
 <!-- =============================================================== -->
 <script type="module">
-    // Import the functions you need from the SDKs you need
+    // --- Firebase SDK Imports ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, addDoc, serverTimestamp, query, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
 
-    // Your web app's Firebase configuration
+    // ===============================================================
+    // --- IMPORTANT: ImgBB CONFIGURATION ---
+    // ===============================================================
+    // 1. Go to https://api.imgbb.com/ and click "Get API Key".
+    // 2. Sign up for a free account.
+    // 3. Once you are in your account, copy your API key.
+    // 4. Paste your API key below.
+    const IMGBB_API_KEY = "YOUR_IMGBB_API_KEY"; // <-- PASTE YOUR API KEY HERE
+    // ===============================================================
+
+    // --- Firebase Configuration ---
     const firebaseConfig = {
-      apiKey: "AIzaSyDHtwRzPA4EvInGeCDCcRlb4n8I4k2W9Ik",
-      authDomain: "zezo-393a7.firebaseapp.com",
-      projectId: "zezo-393a7",
-      storageBucket: "zezo-393a7.appspot.com",
-      messagingSenderId: "528457075385",
-      appId: "1:528457075385:web:71dfaa69694c090c842968",
-      measurementId: "G-00RHFXMRMN"
+        apiKey: "AIzaSyDHtwRzPA4EvInGeCDCcRlb4n8I4k2W9Ik",
+        authDomain: "zezo-393a7.firebaseapp.com",
+        projectId: "zezo-393a7",
+        storageBucket: "zezo-393a7.appspot.com",
+        messagingSenderId: "528457075385",
+        appId: "1:528457075385:web:71dfaa69694c090c842968",
+        measurementId: "G-00RHFXMRMN"
     };
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const storage = getStorage(app);
     const provider = new GoogleAuthProvider();
 
     // --- DOM Element References ---
@@ -258,52 +204,49 @@
     const mainProfilePic = document.getElementById('profile-pic');
     const mainUserName = document.getElementById('user-name');
     const mainUserQuote = document.querySelector('.profile .quote');
-
     const uploadArea = document.getElementById('upload-area');
     const fileInput = document.getElementById('file-input');
     const uploadPrompt = document.getElementById('upload-prompt');
     const uploadMessage = document.getElementById('upload-message');
     const screenshotGrid = document.getElementById('screenshot-grid');
-    
     const prevPageBtn = document.getElementById('prev-page');
     const nextPageBtn = document.getElementById('next-page');
     const pageNumbersContainer = document.getElementById('page-numbers');
+    const deleteModal = document.getElementById('delete-modal');
+    const modalCancelBtn = document.getElementById('modal-cancel-btn');
+    const modalConfirmBtn = document.getElementById('modal-confirm-btn');
 
+    // --- Global State ---
     const ADMIN_EMAIL = "d4eners@gmail.com";
     let currentUser = null;
-    let currentUserRole = 'user'; // Default role
-
+    let currentUserRole = 'user';
     const IMAGES_PER_PAGE = 12;
     let currentPage = 1;
     let allImages = [];
-    let unsubscribeFromImages; // To detach the listener when logged out
+    let unsubscribeFromImages; 
 
     // ===============================================================
-    // AUTHENTICATION LOGIC
+    // AUTHENTICATION LOGIC (No changes needed here)
     // ===============================================================
     loginBtn.addEventListener('click', () => {
-        signInWithPopup(auth, provider)
-            .catch((error) => console.error("Google Sign-In Error:", error));
+        signInWithPopup(auth, provider).catch(error => console.error("Google Sign-In Error:", error));
     });
 
     logoutBtn.addEventListener('click', () => {
-        signOut(auth).catch((error) => console.error("Sign Out Error:", error));
+        signOut(auth).catch(error => console.error("Sign Out Error:", error));
     });
 
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            // User is signed in
             currentUser = user;
             await handleUserLogin(user);
         } else {
-            // User is signed out
             currentUser = null;
             handleUserLogout();
         }
     });
 
     async function handleUserLogin(user) {
-        // Update UI to show user is logged in
         loginBtn.style.display = 'none';
         userProfileArea.style.display = 'flex';
         authUserName.textContent = user.displayName;
@@ -312,63 +255,60 @@
         mainUserName.textContent = user.displayName;
         mainUserQuote.textContent = "Welcome to the gallery!";
 
-        // Check user role and save user data to Firestore if they are new
         const userRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userRef);
 
         if (!userDoc.exists()) {
-            // New user, create their document in Firestore
             await setDoc(userRef, {
                 displayName: user.displayName,
                 email: user.email,
                 photoURL: user.photoURL,
-                role: user.email === ADMIN_EMAIL ? 'admin' : 'user', // Assign admin role if email matches
+                role: user.email === ADMIN_EMAIL ? 'admin' : 'user',
                 createdAt: serverTimestamp()
             });
             currentUserRole = user.email === ADMIN_EMAIL ? 'admin' : 'user';
         } else {
-            // Existing user, get their role
             currentUserRole = userDoc.data().role || 'user';
         }
         
         console.log(`User logged in. Role: ${currentUserRole}`);
 
-        // Enable gallery features
         uploadArea.classList.remove('disabled');
-        uploadPrompt.innerHTML = '<strong>Drag & drop</strong> your screenshots here, or <strong>click to select files</strong>.';
+        uploadPrompt.innerHTML = '<strong>Drag & drop</strong> screenshots, or <strong>click to select</strong>.';
         
-        // Fetch and display images from Firestore
         fetchAndDisplayImages();
     }
 
     function handleUserLogout() {
-        // Reset UI to logged-out state
         loginBtn.style.display = 'block';
         userProfileArea.style.display = 'none';
-        mainProfilePic.src = 'https://i.ibb.co/mVDyZMTg/e3fbda5ef554577e5aa1e68d7fb2cda7.jpg'; // Reset to default
+        mainProfilePic.src = 'https://i.ibb.co/mVDyZMTg/e3fbda5ef554577e5aa1e68d7fb2cda7.jpg';
         mainUserName.textContent = 'Z E Z O';
         mainUserQuote.textContent = 'Login to see your profile & share screenshots!';
         currentUserRole = 'user';
 
-        // Disable gallery features
         uploadArea.classList.add('disabled');
         uploadPrompt.textContent = 'Please login to upload screenshots.';
         screenshotGrid.innerHTML = '<p style="color: #aaa; grid-column: 1 / -1;">Please login to view the gallery.</p>';
 
-        // Detach the real-time listener
         if (unsubscribeFromImages) {
             unsubscribeFromImages();
         }
     }
 
     // ===============================================================
-    // IMAGE GALLERY LOGIC
+    // IMAGE GALLERY LOGIC (UPDATED FOR ImgBB)
     // ===============================================================
 
     // --- Upload Logic ---
     uploadArea.addEventListener('click', () => {
+        if (IMGBB_API_KEY === "f4674c56e25d7969059afe104aa60375") {
+            uploadMessage.textContent = "Error: ImgBB API Key is not configured in the script.";
+            return;
+        }
         if (!uploadArea.classList.contains('disabled')) fileInput.click();
     });
+
     fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
     async function handleFiles(files) {
@@ -382,27 +322,30 @@
 
         for (const file of files) {
             if (file.type.startsWith('image/')) {
-                // IMPORTANT: 18+ Image Check
-                // A true 18+ check requires a server-side solution like Google Cloud Vision API.
-                // The following is a note for you. You would trigger a Cloud Function on file upload
-                // to analyze the image. If it's inappropriate, the function would delete it.
-                // For now, we'll upload directly.
+                const formData = new FormData();
+                formData.append('image', file);
                 
-                const storageRef = ref(storage, `screenshots/${currentUser.uid}/${Date.now()}_${file.name}`);
-                const uploadTask = uploadBytes(storageRef, file).then(async (snapshot) => {
-                    const downloadURL = await getDownloadURL(snapshot.ref);
-                    // Save image info to Firestore
-                    await addDoc(collection(db, "images"), {
-                        imageUrl: downloadURL,
-                        uploaderUid: currentUser.uid,
-                        uploaderName: currentUser.displayName,
-                        uploaderPic: currentUser.photoURL,
-                        createdAt: serverTimestamp(),
-                        hidden: false,
-                        status: 'visible' // In a real app, this might be 'pending_review'
-                    });
+                const uploadPromise = fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(async (result) => {
+                    if (result.success) {
+                        // On successful upload to ImgBB, save info to Firestore
+                        await addDoc(collection(db, "images"), {
+                            imageUrl: result.data.url, // <-- This is now the ImgBB URL
+                            uploaderUid: currentUser.uid,
+                            uploaderName: currentUser.displayName,
+                            uploaderPic: currentUser.photoURL,
+                            createdAt: serverTimestamp(),
+                            hidden: false,
+                        });
+                    } else {
+                        throw new Error(result.error.message || 'ImgBB upload failed.');
+                    }
                 });
-                uploadPromises.push(uploadTask);
+                uploadPromises.push(uploadPromise);
             }
         }
         
@@ -411,7 +354,7 @@
             uploadMessage.textContent = 'Upload successful!';
         } catch (error) {
             console.error('Upload error:', error);
-            uploadMessage.textContent = 'An error occurred during upload.';
+            uploadMessage.textContent = `Upload error: ${error.message}`;
         }
         
         setTimeout(() => { uploadMessage.textContent = ''; }, 5000);
@@ -422,14 +365,12 @@
         const imagesCollection = collection(db, "images");
         
         let q = imagesCollection;
-        // If the user is not an admin, only show images that are not hidden
         if (currentUserRole !== 'admin') {
             q = query(imagesCollection, where("hidden", "==", false));
         }
 
         unsubscribeFromImages = onSnapshot(q, (snapshot) => {
             allImages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            // Sort by creation date, newest first
             allImages.sort((a, b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0));
             currentPage = 1;
             renderPage();
@@ -440,13 +381,14 @@
     }
 
     function renderPage() {
-        screenshotGrid.innerHTML = ''; // Clear existing
+        screenshotGrid.innerHTML = '';
         const totalPages = Math.ceil(allImages.length / IMAGES_PER_PAGE) || 1;
-
         const pageImages = allImages.slice((currentPage - 1) * IMAGES_PER_PAGE, currentPage * IMAGES_PER_PAGE);
 
-        if (pageImages.length === 0) {
+        if (pageImages.length === 0 && currentUser) {
             screenshotGrid.innerHTML = '<p style="color: #aaa; grid-column: 1 / -1;">No screenshots yet. Be the first to upload one!</p>';
+        } else if (!currentUser) {
+             screenshotGrid.innerHTML = '<p style="color: #aaa; grid-column: 1 / -1;">Please login to view the gallery.</p>';
         } else {
             pageImages.forEach(imgData => {
                 const item = document.createElement('div');
@@ -461,7 +403,6 @@
                 img.loading = 'lazy';
                 item.appendChild(img);
 
-                // Add admin controls if the user is an admin
                 if (currentUserRole === 'admin') {
                     const controls = document.createElement('div');
                     controls.className = 'admin-controls';
@@ -476,7 +417,7 @@
                     deleteBtn.className = 'admin-btn delete-btn';
                     deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
                     deleteBtn.title = 'Delete Image';
-                    deleteBtn.onclick = () => deleteImage(imgData.id, imgData.imageUrl);
+                    deleteBtn.onclick = () => confirmDeleteImage(imgData.id);
 
                     controls.appendChild(hideBtn);
                     controls.appendChild(deleteBtn);
@@ -495,26 +436,42 @@
         await updateDoc(imageRef, { hidden: shouldBeHidden });
     }
     
-    async function deleteImage(docId, imageUrl) {
-        if (!confirm("Are you sure you want to permanently delete this image?")) return;
-        
+    // --- Image Deletion Logic ---
+    function confirmDeleteImage(docId) {
+        deleteModal.classList.add('visible');
+
+        const handleCancel = () => {
+            deleteModal.classList.remove('visible');
+            modalConfirmBtn.removeEventListener('click', handleConfirm);
+            modalCancelBtn.removeEventListener('click', handleCancel);
+        };
+
+        const handleConfirm = () => {
+            deleteImage(docId);
+            handleCancel();
+        };
+
+        modalConfirmBtn.addEventListener('click', handleConfirm);
+        modalCancelBtn.addEventListener('click', handleCancel);
+    }
+    
+    async function deleteImage(docId) {
         try {
-            // Delete Firestore document
+            // Delete the Firestore document.
             await deleteDoc(doc(db, "images", docId));
             
-            // Delete file from Storage
-            const storageRef = ref(storage, imageUrl);
-            await deleteObject(storageRef);
-            
-            console.log("Image deleted successfully.");
+            // NOTE: Deleting from ImgBB requires a backend with a deletion key,
+            // which is not suitable for a simple client-side app.
+            // We are only deleting the reference from our database. The image
+            // will remain on ImgBB but will no longer appear in the gallery.
+            console.log("Image reference deleted from Firestore.");
         } catch (error) {
-            console.error("Error deleting image: ", error);
-            alert("Could not delete the image. Check console for details.");
+            console.error("Error deleting image from Firestore: ", error);
         }
     }
 
 
-    // --- Pagination Logic ---
+    // --- Pagination Logic (No changes needed)---
     function renderPaginationControls(totalPages) {
         pageNumbersContainer.innerHTML = '';
         
@@ -533,7 +490,7 @@
         }
 
         prevPageBtn.disabled = currentPage === 1;
-        nextPageBtn.disabled = currentPage === totalPages;
+        nextPageBtn.disabled = currentPage === totalPages || totalPages === 0;
     }
 
     prevPageBtn.addEventListener('click', () => {
@@ -552,6 +509,5 @@
     });
 
 </script>
-
 </body>
 </html>
