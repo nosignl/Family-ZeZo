@@ -29,11 +29,26 @@
         .social-icons a { color: #fff; text-decoration: none; margin: 0 10px; font-size: 1.4em; display: inline-block; transition: transform .4s ease, color .4s ease; }
         .social-icons a:hover { color: #c084fc; transform: scale(1.3) rotate(5deg); }
 
+        /* Whitelist Section Styles */
+        .whitelist-section { margin-top: 20px; border-top: 1px solid rgba(168, 85, 247, 0.4); padding-top: 20px; }
+        .whitelist-section h3 { font-family: 'Minecraftia', sans-serif; color: #c084fc; letter-spacing: 1px; margin-bottom: 15px; }
+        .whitelist-btn { font-family: 'Minecraftia', sans-serif; font-size: 1em; background: linear-gradient(90deg, #9333ea 60%, #a855f7 100%); border: 2px solid #a855f7; color: #fff; padding: 10px 25px; border-radius: 12px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 2px 12px #9333eacc; }
+        .whitelist-btn:hover { transform: scale(1.05); box-shadow: 0 4px 20px #a855f7; }
+        #whitelist-form { display: none; margin-top: 15px; gap: 10px; align-items: center; justify-content: center; }
+        #whitelist-form.visible { display: flex; }
+        .mc-input-container { display: flex; align-items: center; background: rgba(0,0,0,0.2); border: 2px solid #a855f7; border-radius: 12px; padding: 5px; }
+        #mc-skin-img { width: 40px; height: 40px; border-radius: 8px; margin-right: 10px; background-color: rgba(255,255,255,0.1); image-rendering: pixelated; }
+        #mc-username-input { background: transparent; border: none; color: white; font-family: 'Minecraftia', sans-serif; font-size: 1em; outline: none; flex-grow: 1; }
+        #send-whitelist-btn { padding: 12px 18px; background: linear-gradient(90deg, #a855f7 60%, #c084fc 100%); border: none; border-radius: 12px; color: white; cursor: pointer; transition: transform 0.2s; font-size: 1.2em; }
+        #send-whitelist-btn:hover { transform: scale(1.1); }
+        #whitelist-message { font-family: 'Minecraftia', sans-serif; margin-top: 10px; min-height: 18px; color: #c084fc; }
+
+
         /* Auth Section Styles */
         .auth-container { position: fixed; top: 20px; right: 20px; z-index: 1001; }
         .auth-btn { background: linear-gradient(90deg, #a855f7 60%, #c084fc 100%); color: #fff; border: 2px solid #a855f7; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-family: 'Minecraftia', sans-serif; font-size: 1em; transition: all 0.3s ease; box-shadow: 0 2px 12px #a855f7cc; }
         .auth-btn:hover { transform: scale(1.05); box-shadow: 0 4px 20px #a855f7; }
-        #user-profile-area { display: none; /* Hidden by default */ align-items: center; gap: 15px; background-color: rgba(24, 27, 44, 0.7); padding: 8px 15px; border-radius: 50px; border: 1px solid rgba(168, 85, 247, 0.3); backdrop-filter: blur(5px); }
+        #user-profile-area { display: none; align-items: center; gap: 15px; background-color: rgba(24, 27, 44, 0.7); padding: 8px 15px; border-radius: 50px; border: 1px solid rgba(168, 85, 247, 0.3); backdrop-filter: blur(5px); }
         #user-profile-area img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #c084fc; }
         #user-profile-area #auth-user-name { font-weight: bold; }
         #logout-btn { background: #e53e3e; color: white; padding: 8px 12px; border: none; }
@@ -60,13 +75,13 @@
         .uploader-info img { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #c084fc; }
         .uploader-info span { font-size: 0.9em; font-weight: bold; text-shadow: 1px 1px 3px black; }
 
-        .admin-controls { position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 8px; opacity: 0; transition: opacity 0.3s; }
-        .screenshot-item:hover .admin-controls { opacity: 1; }
-        .admin-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.1em; padding: 5px; border-radius: 5px; transition: background 0.2s, color 0.2s; }
-        .admin-btn.hide-btn:hover { background: #facc15; color: black; }
-        .admin-btn.delete-btn:hover { background: #ef4444; color: white; }
+        .image-controls { position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 8px; opacity: 0; transition: opacity 0.3s; }
+        .screenshot-item:hover .image-controls { opacity: 1; }
+        .control-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.1em; padding: 5px; border-radius: 5px; transition: background 0.2s, color 0.2s; }
+        .control-btn.hide-btn:hover { background: #facc15; color: black; }
+        .control-btn.delete-btn:hover { background: #ef4444; color: white; }
         .screenshot-item.hidden-by-admin { opacity: 0.4; border-color: #facc15; }
-        .screenshot-item.hidden-by-admin .admin-btn.hide-btn { color: #facc15; }
+        .screenshot-item.hidden-by-admin .control-btn.hide-btn { color: #facc15; }
 
         /* Fullscreen Lightbox/Modal */
         #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 3000; }
@@ -79,7 +94,7 @@
 
         /* Pagination Controls */
         .pagination-controls { display: flex; justify-content: center; align-items: center; margin-top: 40px; font-family: 'Minecraftia', sans-serif; gap: 10px; }
-        .pagination-btn { font-family: inherit; font-size: 1em; background: linear-gradient(90deg, #9333ea 60%, #a855f7 100%); border: 2px solid #a855f7; color: #fff; padding: 8px 16px; border-radius: 10px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; }
+        .pagination-btn { font-family: inherit; font-size: 1em; background: linear-gradient(90deg, #9333ea 60%, #a855f7 100%); border: 2px solid #a855f7; color: #fff; padding: 8px 16px; border-radius: 10px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
         .pagination-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 15px #a855f7; background: linear-gradient(90deg, #a855f7 60%, #c084fc 100%); }
         .pagination-btn:disabled { background: #4a5568; border-color: #718096; cursor: not-allowed; opacity: 0.6; }
         #page-numbers { display: flex; align-items: center; gap: 5px; }
@@ -88,7 +103,7 @@
         .page-number.active { color: #fff; background-color: rgba(168, 85, 247, 0.3); border-radius: 5px; font-weight: bold; }
 
         /* Deletion Confirmation Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: none; /* Hidden by default */ justify-content: center; align-items: center; z-index: 2000; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 2000; }
         .modal-content { background: #232946; padding: 30px; border-radius: 20px; border: 1px solid #a855f7; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 30px #a855f7; transform: scale(0.9); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; }
         .modal-overlay.visible { display: flex; }
         .modal-overlay.visible .modal-content { transform: scale(1); opacity: 1; }
@@ -128,14 +143,30 @@
     <div class="profile">
         <div class="avatar-container">
             <div class="avatar-border"></div>
+            <!-- This image is now static -->
             <img id="profile-pic" src="https://i.ibb.co/mVDyZMTg/e3fbda5ef554577e5aa1e68d7fb2cda7.jpg" alt="Profile Picture">
         </div>
+        <!-- This name is now static -->
         <h1 id="user-name">Z E Z O</h1>
-        <p class="quote">Login to see your profile & share screenshots!</p>
+        <p class="quote">Follow your dream, not people.</p>
         <div class="social-icons" style="margin-top:15px;">
           <a href="https://instagram.com/ze2ow" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
           <a href="https://discord.gg/JfGhPfDFA7" target="_blank" rel="noopener"><i class="fab fa-discord"></i></a>
           <a href="https://tiktok.com/@czezo" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
+        </div>
+        
+        <!-- NEW Whitelist Section -->
+        <div class="whitelist-section">
+            <h3>Minecraft Whitelist</h3>
+            <button id="whitelist-btn" class="whitelist-btn">Whitelist</button>
+            <div id="whitelist-form">
+                <div class="mc-input-container">
+                    <img id="mc-skin-img" src="https://crafatar.com/avatars/steve?size=40&overlay" alt="MC Skin">
+                    <input type="text" id="mc-username-input" placeholder="Username">
+                </div>
+                <button id="send-whitelist-btn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+            <div id="whitelist-message"></div>
         </div>
     </div>
 
@@ -196,6 +227,9 @@
     // --- ImgBB CONFIGURATION ---
     const IMGBB_API_KEY = "f4674c56e25d7969059afe104aa60375"; // <-- PASTE YOUR API KEY HERE
 
+    // --- Discord Webhook ---
+    const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1381304917326827580/oFMo8oeVbc_sAx6u5QNaVvlWohGp0iIhn_vDSuT9U8AwMmy3viL3lQY5X4Xbs9Qdhtlt";
+
     // --- Firebase Configuration ---
     const firebaseConfig = {
         apiKey: "AIzaSyDHtwRzPA4EvInGeCDCcRlb4n8I4k2W9Ik",
@@ -219,12 +253,14 @@
     const userProfileArea = document.getElementById('user-profile-area');
     const authUserName = document.getElementById('auth-user-name');
     const authUserPic = document.getElementById('auth-user-pic');
-    const mainProfilePic = document.getElementById('profile-pic');
-    const mainUserName = document.getElementById('user-name');
-    const mainUserQuote = document.querySelector('.profile .quote');
+    const whitelistBtn = document.getElementById('whitelist-btn');
+    const whitelistForm = document.getElementById('whitelist-form');
+    const mcSkinImg = document.getElementById('mc-skin-img');
+    const mcUsernameInput = document.getElementById('mc-username-input');
+    const sendWhitelistBtn = document.getElementById('send-whitelist-btn');
+    const whitelistMessage = document.getElementById('whitelist-message');
     const uploadArea = document.getElementById('upload-area');
     const fileInput = document.getElementById('file-input');
-    const uploadPrompt = document.getElementById('upload-prompt');
     const uploadMessage = document.getElementById('upload-message');
     const screenshotGrid = document.getElementById('screenshot-grid');
     const prevPageBtn = document.getElementById('prev-page');
@@ -251,6 +287,8 @@
     let currentZoom = 1;
     let isPanning = false;
     let startX, startY, translateX, translateY;
+    let skinUpdateTimeout;
+
 
     // ===============================================================
     // AUTHENTICATION LOGIC
@@ -269,13 +307,13 @@
     });
 
     async function handleUserLogin(user) {
+        // Update top-right auth area
         loginBtn.style.display = 'none';
         userProfileArea.style.display = 'flex';
         authUserName.textContent = user.displayName;
         authUserPic.src = user.photoURL;
-        mainProfilePic.src = user.photoURL;
-        mainUserName.textContent = user.displayName;
-        mainUserQuote.textContent = "Welcome to the gallery!";
+
+        // Main profile card remains static and does NOT update with user info
 
         const userRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userRef);
@@ -286,7 +324,7 @@
                 displayName: user.displayName, email: user.email, photoURL: user.photoURL, role, createdAt: serverTimestamp()
             });
         } else if (userDoc.data().role !== role) {
-            await updateDoc(userRef, { role }); // Update role if it changed
+            await updateDoc(userRef, { role });
         }
         currentUserRole = role;
         
@@ -299,9 +337,6 @@
     function handleUserLogout() {
         loginBtn.style.display = 'block';
         userProfileArea.style.display = 'none';
-        mainProfilePic.src = 'https://i.ibb.co/mVDyZMTg/e3fbda5ef554577e5aa1e68d7fb2cda7.jpg';
-        mainUserName.textContent = 'Z E Z O';
-        mainUserQuote.textContent = 'Login to see your profile & share screenshots!';
         currentUserRole = 'user';
 
         uploadArea.classList.add('disabled');
@@ -311,11 +346,62 @@
     }
 
     // ===============================================================
+    // WHITELIST FORM LOGIC
+    // ===============================================================
+    whitelistBtn.addEventListener('click', () => {
+        whitelistForm.classList.toggle('visible');
+    });
+
+    mcUsernameInput.addEventListener('input', () => {
+        clearTimeout(skinUpdateTimeout);
+        skinUpdateTimeout = setTimeout(() => {
+            const username = mcUsernameInput.value.trim();
+            if (username) {
+                mcSkinImg.src = `https://crafatar.com/avatars/${username}?size=40&overlay`;
+            } else {
+                mcSkinImg.src = 'https://crafatar.com/avatars/steve?size=40&overlay'; // Default skin
+            }
+        }, 300);
+    });
+
+    sendWhitelistBtn.addEventListener('click', async () => {
+        const username = mcUsernameInput.value.trim();
+        if (!username) {
+            whitelistMessage.textContent = "Please enter a username.";
+            return;
+        }
+
+        whitelistMessage.textContent = "Sending...";
+        try {
+            const response = await fetch(DISCORD_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content: `New whitelist request from **${currentUser?.displayName || 'A user'}**: \`${username}\``,
+                    username: "Whitelist Bot",
+                    avatar_url: "https://i.imgur.com/4M34G3p.png"
+                })
+            });
+
+            if (response.ok) {
+                whitelistMessage.textContent = "Request sent successfully!";
+                mcUsernameInput.value = '';
+            } else {
+                throw new Error(`Discord API error: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Webhook send error:", error);
+            whitelistMessage.textContent = "Failed to send request.";
+        }
+        setTimeout(() => { whitelistMessage.textContent = ''; }, 5000);
+    });
+
+    // ===============================================================
     // IMAGE GALLERY LOGIC
     // ===============================================================
     uploadArea.addEventListener('click', () => {
         if (IMGBB_API_KEY === "YOUR_IMGBB_API_KEY") {
-            uploadMessage.textContent = "Error: ImgBB API Key is not configured in the script.";
+            uploadMessage.textContent = "Error: ImgBB API Key is not configured.";
             return;
         }
         if (!uploadArea.classList.contains('disabled')) fileInput.click();
@@ -387,15 +473,32 @@
                 uploaderDiv.innerHTML = `<img src="${imgData.uploaderPic}" alt="${imgData.uploaderName}"><span>${imgData.uploaderName}</span>`;
                 
                 item.append(img, uploaderDiv);
+                
+                const isOwner = currentUser?.uid === imgData.uploaderUid;
+                const isAdmin = currentUserRole === 'admin';
 
-                if (currentUserRole === 'admin') {
+                if(isOwner || isAdmin) {
                     const controls = document.createElement('div');
-                    controls.className = 'admin-controls';
-                    controls.innerHTML = `
-                        <button class="admin-btn hide-btn" title="${imgData.hidden ? 'Show' : 'Hide'}"><i class="fas fa-eye${imgData.hidden ? '-slash' : ''}"></i></button>
-                        <button class="admin-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>`;
-                    controls.querySelector('.hide-btn').onclick = (e) => { e.stopPropagation(); toggleImageVisibility(imgData.id, !imgData.hidden); };
-                    controls.querySelector('.delete-btn').onclick = (e) => { e.stopPropagation(); confirmDeleteImage(imgData.id); };
+                    controls.className = 'image-controls';
+
+                    // Delete button for owner or admin
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'control-btn delete-btn';
+                    deleteBtn.title = 'Delete';
+                    deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                    deleteBtn.onclick = (e) => { e.stopPropagation(); confirmDeleteImage(imgData.id); };
+                    
+                    if (isAdmin) {
+                        // Hide button only for admin
+                        const hideBtn = document.createElement('button');
+                        hideBtn.className = 'control-btn hide-btn';
+                        hideBtn.title = imgData.hidden ? 'Show' : 'Hide';
+                        hideBtn.innerHTML = `<i class="fas fa-eye${imgData.hidden ? '-slash' : ''}"></i>`;
+                        hideBtn.onclick = (e) => { e.stopPropagation(); toggleImageVisibility(imgData.id, !imgData.hidden); };
+                        controls.appendChild(hideBtn);
+                    }
+                    
+                    controls.appendChild(deleteBtn);
                     item.appendChild(controls);
                 }
                 screenshotGrid.appendChild(item);
