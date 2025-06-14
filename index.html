@@ -420,7 +420,7 @@
             contents: [{
                 parts: [
                     { text: "Is this image a screenshot from the video game Minecraft, or is it a Minecraft-related artwork? Answer with only 'yes' or 'no'." },
-                    { inlineData: { mimeType: "image/png", data: base64ImageData } }
+                    { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }
                 ]
             }]
         };
@@ -428,13 +428,21 @@
             const response = await fetch(url, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
             });
-            if (!response.ok) return false;
+            if (!response.ok) {
+                console.error("AI API Error:", response.status);
+                return true; // Fail-safe: Allow if API has issues
+            }
             const result = await response.json();
-            const text = result.candidates[0]?.content.parts[0]?.text;
-            return text && text.toLowerCase().includes('yes');
+            const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+            
+            // Allow if the response contains "yes". Block only if it explicitly contains "no".
+            if (text && text.toLowerCase().trim().includes('no')) {
+                return false;
+            }
+            return true;
         } catch (error) {
-            console.error("AI check failed:", error);
-            return false; // Fail safe: allow upload if AI check fails
+            console.error("AI check failed, allowing upload as a fallback:", error);
+            return true; // IMPORTANT: Allow upload if the AI check itself fails.
         }
     }
 
@@ -442,23 +450,27 @@
         if (!currentUser) return;
         uploadMessage.textContent = `Analyzing ${files.length} file(s)...`;
         
-        let validFiles = [];
-        for (const file of files) {
+        const fileCheckPromises = Array.from(files).map(async file => {
             if (file.type.startsWith('image/')) {
                 const base64 = await toBase64(file);
                 const isMinecraft = await checkIsMinecraft(base64);
                 if (isMinecraft) {
-                    validFiles.push(file);
+                    return file;
                 } else {
-                    uploadMessage.textContent = `Rejected: '${file.name}' is not a Minecraft image.`;
+                    uploadMessage.textContent = `Rejected: '${file.name}' may not be a Minecraft image.`;
                     setTimeout(() => uploadMessage.textContent = '', 4000);
+                    return null;
                 }
             }
-        }
+            return null;
+        });
+
+        const validFiles = (await Promise.all(fileCheckPromises)).filter(Boolean);
 
         if (validFiles.length === 0) {
-            uploadMessage.textContent = 'No valid Minecraft images selected.';
-            setTimeout(() => uploadMessage.textContent = '', 3000);
+            if (files.length > 0) uploadMessage.textContent = 'No valid Minecraft images were detected.';
+            else uploadMessage.textContent = '';
+            setTimeout(() => { if (uploadMessage.textContent !== 'Upload successful!') uploadMessage.textContent = '' }, 3000);
             return;
         }
 
