@@ -228,7 +228,7 @@
     import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, addDoc, serverTimestamp, query, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
     // --- ImgBB CONFIGURATION ---
-    const IMGBB_API_KEY = "f4674c56e25d7969059afe104aa60375"; // <-- PASTE YOUR API KEY HERE
+    const IMGBB_API_KEY = "f4674c56e25d7969059afe104aa60375"; // <-- API Key Added
 
     // --- Discord Webhook ---
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1381304917326827580/oFMo8oeVbc_sAx6u5QNaVvlWohGp0iIhn_vDSuT9U8AwMmy3viL3lQY5X4Xbs9Qdhtlt";
@@ -293,29 +293,26 @@
     let skinUpdateTimeout;
 
     // ===============================================================
-    // TIME AGO HELPER FUNCTION
+    // HELPER FUNCTIONS
     // ===============================================================
     function timeAgo(date) {
         if (!date) return 'a moment ago';
         const seconds = Math.floor((new Date() - date) / 1000);
         if (seconds < 5) return 'just now';
-        const intervals = {
-            year: 31536000,
-            month: 2592000,
-            day: 86400,
-            hour: 3600,
-            minute: 60,
-            second: 1
-        };
+        const intervals = { year: 31536000, month: 2592000, day: 86400, hour: 3600, minute: 60, second: 1 };
         for (const [unit, secondsInUnit] of Object.entries(intervals)) {
             const interval = Math.floor(seconds / secondsInUnit);
-            if (interval >= 1) {
-                return interval + ` ${unit}` + (interval === 1 ? '' : 's') + ' ago';
-            }
+            if (interval >= 1) return `${interval} ${unit}${interval > 1 ? 's' : ''} ago`;
         }
-        return Math.floor(seconds) + ' seconds ago';
+        return `${Math.floor(seconds)} seconds ago`;
     }
 
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = error => reject(error);
+    });
 
     // ===============================================================
     // AUTHENTICATION LOGIC
@@ -325,11 +322,8 @@
 
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
-        if (user) {
-            await handleUserLogin(user);
-        } else {
-            handleUserLogout();
-        }
+        if (user) await handleUserLogin(user);
+        else handleUserLogout();
     });
 
     async function handleUserLogin(user) {
@@ -340,8 +334,8 @@
 
         const userRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userRef);
-
         const role = user.email === ADMIN_EMAIL ? 'admin' : 'user';
+
         if (!userDoc.exists()) {
             await setDoc(userRef, { displayName: user.displayName, email: user.email, photoURL: user.photoURL, role, createdAt: serverTimestamp() });
         } else if (userDoc.data().role !== role) {
@@ -366,7 +360,7 @@
     }
 
     // ===============================================================
-    // WHITELIST FORM LOGIC (FIXED)
+    // WHITELIST FORM LOGIC
     // ===============================================================
     const defaultSkinUrl = 'https://crafatar.com/avatars/steve?size=40&overlay';
     whitelistBtn.addEventListener('click', () => whitelistForm.classList.toggle('visible'));
@@ -375,14 +369,10 @@
         clearTimeout(skinUpdateTimeout);
         skinUpdateTimeout = setTimeout(() => {
             const username = mcUsernameInput.value.trim();
-            if (username) {
-                const tempImg = new Image();
-                tempImg.onload = () => { mcSkinImg.src = tempImg.src; };
-                tempImg.onerror = () => { mcSkinImg.src = defaultSkinUrl; };
-                tempImg.src = `https://crafatar.com/avatars/${username}?size=40&overlay`;
-            } else {
-                mcSkinImg.src = defaultSkinUrl;
-            }
+            const tempImg = new Image();
+            tempImg.onload = () => { mcSkinImg.src = tempImg.src; };
+            tempImg.onerror = () => { mcSkinImg.src = defaultSkinUrl; };
+            tempImg.src = username ? `https://crafatar.com/avatars/${username}?size=40&overlay` : defaultSkinUrl;
         }, 300);
     });
 
@@ -412,7 +402,7 @@
     });
 
     // ===============================================================
-    // IMAGE GALLERY LOGIC (FIXED)
+    // IMAGE GALLERY LOGIC (WITH AI CHECK)
     // ===============================================================
     uploadArea.addEventListener('click', () => {
         if (IMGBB_API_KEY === "YOUR_IMGBB_API_KEY") {
@@ -423,22 +413,66 @@
 
     fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
+    async function checkIsMinecraft(base64ImageData) {
+        const apiKey = ""; // Leave blank, handled by the environment
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+        const payload = {
+            contents: [{
+                parts: [
+                    { text: "Is this image a screenshot from the video game Minecraft, or is it a Minecraft-related artwork? Answer with only 'yes' or 'no'." },
+                    { inlineData: { mimeType: "image/png", data: base64ImageData } }
+                ]
+            }]
+        };
+        try {
+            const response = await fetch(url, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+            });
+            if (!response.ok) return false;
+            const result = await response.json();
+            const text = result.candidates[0]?.content.parts[0]?.text;
+            return text && text.toLowerCase().includes('yes');
+        } catch (error) {
+            console.error("AI check failed:", error);
+            return false; // Fail safe: allow upload if AI check fails
+        }
+    }
+
     async function handleFiles(files) {
         if (!currentUser) return;
-        uploadMessage.textContent = `Uploading ${files.length} file(s)...`;
+        uploadMessage.textContent = `Analyzing ${files.length} file(s)...`;
         
-        const uploadPromises = Array.from(files).filter(f => f.type.startsWith('image/')).map(file => {
-            const optimisticId = `optimistic_${Date.now()}_${Math.random()}`;
+        let validFiles = [];
+        for (const file of files) {
+            if (file.type.startsWith('image/')) {
+                const base64 = await toBase64(file);
+                const isMinecraft = await checkIsMinecraft(base64);
+                if (isMinecraft) {
+                    validFiles.push(file);
+                } else {
+                    uploadMessage.textContent = `Rejected: '${file.name}' is not a Minecraft image.`;
+                    setTimeout(() => uploadMessage.textContent = '', 4000);
+                }
+            }
+        }
+
+        if (validFiles.length === 0) {
+            uploadMessage.textContent = 'No valid Minecraft images selected.';
+            setTimeout(() => uploadMessage.textContent = '', 3000);
+            return;
+        }
+
+        uploadMessage.textContent = `Uploading ${validFiles.length} valid file(s)...`;
+        const uploadPromises = validFiles.map(file => {
             const formData = new FormData();
             formData.append('image', file);
             return fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData })
                 .then(res => res.json())
                 .then(result => {
                     if (!result.success) throw new Error(result.error?.message || 'ImgBB upload failed.');
-                    const newImageData = {
+                    return addDoc(collection(db, "images"), {
                         imageUrl: result.data.url, uploaderUid: currentUser.uid, uploaderName: currentUser.displayName, uploaderPic: currentUser.photoURL, createdAt: serverTimestamp(), hidden: false
-                    };
-                    return addDoc(collection(db, "images"), newImageData);
+                    });
                 });
         });
         
@@ -454,15 +488,12 @@
     
     function fetchAndDisplayImages() {
         if (unsubscribeFromImages) unsubscribeFromImages();
-
-        let q = collection(db, "images");
-        if (currentUserRole !== 'admin') {
-            q = query(q, where("hidden", "==", false));
-        }
-
+        let q = query(collection(db, "images"));
+        if (currentUserRole !== 'admin') q = query(q, where("hidden", "==", false));
+        
         unsubscribeFromImages = onSnapshot(q, (snapshot) => {
             allImages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            allImages.sort((a, b) => (b.createdAt?.toDate() || new Date()) - (a.createdAt?.toDate() || new Date()));
+            allImages.sort((a, b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0));
             renderPage();
         }, (error) => console.error("Error fetching images: ", error));
     }
@@ -470,10 +501,8 @@
     function renderPage() {
         screenshotGrid.innerHTML = '';
         const totalPages = Math.ceil(allImages.length / IMAGES_PER_PAGE) || 1;
-        
         if (currentPage > totalPages) currentPage = totalPages;
         if (currentPage < 1) currentPage = 1;
-
         const pageImages = allImages.slice((currentPage - 1) * IMAGES_PER_PAGE, currentPage * IMAGES_PER_PAGE);
 
         if (pageImages.length === 0) {
@@ -498,7 +527,6 @@
                         <span class="name">${imgData.uploaderName}</span>
                         <span class="time-ago">${timeAgo(imgData.createdAt?.toDate())}</span>
                     </div>`;
-                
                 item.append(img, uploaderDiv);
                 
                 const isOwner = currentUser?.uid === imgData.uploaderUid;
@@ -521,7 +549,6 @@
                         hideBtn.onclick = (e) => { e.stopPropagation(); toggleImageVisibility(imgData.id, !imgData.hidden); };
                         controls.appendChild(hideBtn);
                     }
-                    
                     controls.appendChild(deleteBtn);
                     item.appendChild(controls);
                 }
@@ -532,37 +559,18 @@
     }
     
     // --- LIGHTBOX & ZOOM LOGIC ---
-    function openLightbox(src) {
-        lightboxImg.src = src;
-        lightbox.classList.add('visible');
-        resetZoom();
-    }
-    function closeLightbox() {
-        lightbox.classList.remove('visible');
-        lightboxImg.src = '';
-    }
-    function changeZoom(amount) {
-        currentZoom = Math.max(1, currentZoom + amount);
-        updateZoom();
-    }
-    function resetZoom() {
-        currentZoom = 1;
-        translateX = 0;
-        translateY = 0;
-        updateZoom();
-    }
-    function updateZoom() {
-        lightboxImg.style.transform = `scale(${currentZoom}) translate(${translateX || 0}px, ${translateY || 0}px)`;
-    }
+    function openLightbox(src) { lightboxImg.src = src; lightbox.classList.add('visible'); resetZoom(); }
+    function closeLightbox() { lightbox.classList.remove('visible'); lightboxImg.src = ''; }
+    function changeZoom(amount) { currentZoom = Math.max(1, currentZoom + amount); updateZoom(); }
+    function resetZoom() { currentZoom = 1; translateX = 0; translateY = 0; updateZoom(); }
+    function updateZoom() { lightboxImg.style.transform = `scale(${currentZoom}) translate(${translateX || 0}px, ${translateY || 0}px)`; }
     lightboxClose.addEventListener('click', closeLightbox);
     lightbox.addEventListener('click', (e) => e.target === lightbox && closeLightbox());
     zoomInBtn.addEventListener('click', () => changeZoom(0.2));
     zoomOutBtn.addEventListener('click', () => changeZoom(-0.2));
     zoomResetBtn.addEventListener('click', resetZoom);
     lightboxImg.addEventListener('mousedown', (e) => {
-        if (currentZoom > 1) {
-            isPanning = true; startX = e.clientX - (translateX || 0); startY = e.clientY - (translateY || 0); lightboxImg.classList.add('zooming');
-        }
+        if (currentZoom > 1) { isPanning = true; startX = e.clientX - (translateX || 0); startY = e.clientY - (translateY || 0); lightboxImg.classList.add('zooming'); }
     });
     window.addEventListener('mouseup', () => { isPanning = false; lightboxImg.classList.remove('zooming'); });
     window.addEventListener('mousemove', (e) => { if (isPanning) { translateX = e.clientX - startX; translateY = e.clientY - startY; updateZoom(); } });
