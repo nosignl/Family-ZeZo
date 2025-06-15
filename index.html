@@ -359,6 +359,7 @@
     const closeProfileModalBtn = document.getElementById('close-profile-modal');
     const newAccountNameInput = document.getElementById('new-account-name');
     const profileModalMessage = document.getElementById('profile-modal-message');
+    const mcHeadPreview = document.getElementById('mc-head-preview');
 
     // --- Global State ---
     const ADMIN_EMAIL = "d4eners@gmail.com";
@@ -428,9 +429,9 @@
     function init() {
         anonymousUserId = localStorage.getItem('anonymousUserId') || crypto.randomUUID();
         localStorage.setItem('anonymousUserId', anonymousUserId);
-    
+
         setupEventListeners();
-        fetchAndDisplayImages(); 
+        fetchAndDisplayImages();
         onAuthStateChanged(auth, async (user) => {
             currentUser = user;
             if (user) {
@@ -445,7 +446,7 @@
                 currentUserRole = 'user';
             }
             updateUIVisibility();
-            fetchAndDisplayImages(); 
+            fetchAndDisplayImages();
         });
     }
 
@@ -533,18 +534,10 @@
         if (unsubscribeFromImages) unsubscribeFromImages();
         let q = collection(db, "images");
         if (currentUserRole !== 'admin') q = query(q, where("hidden", "==", false));
-        
-        let shuffledOnce = false;
         unsubscribeFromImages = onSnapshot(q, (snapshot) => {
             allImages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            // Shuffle only once per page load
-            if (!shuffledOnce) {
-                for (let i = allImages.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [allImages[i], allImages[j]] = [allImages[j], allImages[i]];
-                }
-                shuffledOnce = true;
-            }
+            // Sort by createdAt descending (newest first)
+            allImages.sort((a, b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0));
             renderPage();
         }, (error) => console.error("Error fetching images: ", error));
     }
@@ -569,36 +562,16 @@
                 img.alt = 'Minecraft Screenshot';
                 img.className = 'main-img';
                 img.loading = 'lazy';
-                img.addEventListener('click', async () => {
-                    // Use user ID if logged in, otherwise use IP for anonymous
-                    let viewerId = currentUser ? currentUser.uid : null;
-                    if (!viewerId) {
-                        viewerId = localStorage.getItem('viewer_ip');
-                        if (!viewerId) {
-                            try {
-                                const ipRes = await fetch("https://ipapi.co/json/");
-                                if (ipRes.ok) {
-                                    const ipData = await ipRes.json();
-                                    viewerId = ipData.ip;
-                                    localStorage.setItem('viewer_ip', viewerId);
-                                }
-                            } catch (e) {
-                                viewerId = 'unknown_ip';
-                            }
-                        }
-                    }
-                    const viewKey = `viewed_${imgData.id}_${viewerId}`;
-                    if (!localStorage.getItem(viewKey)) {
-                        const imageRef = doc(db, "images", imgData.id);
-                        await updateDoc(imageRef, { views: increment(1) }).catch(() => {});
-                        localStorage.setItem(viewKey, '1');
-                    }
+                img.addEventListener('click', () => {
+                    // Always increment view on click
+                    const imageRef = doc(db, "images", imgData.id);
+                    updateDoc(imageRef, { views: increment(1) }).catch(() => {});
                     openLightbox(imgData.imageUrl, imgData.id);
                 });
 
                 const uploaderDiv = document.createElement('div');
                 uploaderDiv.className = 'uploader-info';
-                
+
                 const uploaderDetails = document.createElement('div');
                 uploaderDetails.className = 'uploader-details';
                 uploaderDetails.innerHTML = `<img src="${imgData.uploaderPic}" alt="${imgData.uploaderName}">
@@ -615,19 +588,19 @@
                 if (imgData.likes?.includes(likerId)) {
                     likeSection.classList.add('liked');
                 }
-                likeSection.onclick = async (e) => { 
-                    e.stopPropagation(); 
-                    await toggleLike(imgData.id, likeSection); 
+                likeSection.onclick = async (e) => {
+                    e.stopPropagation();
+                    await toggleLike(imgData.id);
                 };
-                
+
                 const viewsDiv = document.createElement('div');
                 viewsDiv.className = 'views-section';
                 viewsDiv.innerHTML = `<i class="fas fa-eye"></i> <span class="views-count">${imgData.views || 0}</span>`;
                 uploaderDiv.appendChild(viewsDiv);
-                
+
                 uploaderDiv.append(uploaderDetails, likeSection);
                 item.append(img, uploaderDiv);
-                
+
                 const isOwner = currentUser?.uid === imgData.uploaderUid;
                 const isAdmin = currentUserRole === 'admin';
 
@@ -639,7 +612,7 @@
                     deleteBtn.title = 'Delete';
                     deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
                     deleteBtn.onclick = (e) => { e.stopPropagation(); confirmDeleteImage(imgData.id); };
-                    
+
                     if (isAdmin) {
                         const hideBtn = document.createElement('button');
                         hideBtn.className = 'control-btn hide-btn';
@@ -692,7 +665,7 @@
     }
 
     // --- LIKE LOGIC ---
-    async function toggleLike(imageId, likeSectionElem) {
+    async function toggleLike(imageId) {
         const likerId = currentUser ? currentUser.uid : anonymousUserId;
         const imageRef = doc(db, "images", imageId);
         try {
@@ -707,11 +680,6 @@
             });
         } catch (e) {
             console.error("Like transaction failed: ", e);
-        }
-        // Animation
-        if (likeSectionElem) {
-            likeSectionElem.classList.add('liked', 'animate-like');
-            setTimeout(() => likeSectionElem.classList.remove('animate-like'), 500);
         }
         renderPage(); // Update UI
     }
