@@ -570,10 +570,9 @@
                 img.className = 'main-img';
                 img.loading = 'lazy';
                 img.addEventListener('click', async () => {
-                    // Get unique viewer key: user id or IP for anonymous
+                    // Use user ID if logged in, otherwise use IP for anonymous
                     let viewerId = currentUser ? currentUser.uid : null;
                     if (!viewerId) {
-                        // Get IP from localStorage or fetch if not present
                         viewerId = localStorage.getItem('viewer_ip');
                         if (!viewerId) {
                             try {
@@ -591,7 +590,7 @@
                     const viewKey = `viewed_${imgData.id}_${viewerId}`;
                     if (!localStorage.getItem(viewKey)) {
                         const imageRef = doc(db, "images", imgData.id);
-                        updateDoc(imageRef, { views: increment(1) }).catch(() => {});
+                        await updateDoc(imageRef, { views: increment(1) }).catch(() => {});
                         localStorage.setItem(viewKey, '1');
                     }
                     openLightbox(imgData.imageUrl, imgData.id);
@@ -616,9 +615,9 @@
                 if (imgData.likes?.includes(likerId)) {
                     likeSection.classList.add('liked');
                 }
-                likeSection.onclick = (e) => { 
+                likeSection.onclick = async (e) => { 
                     e.stopPropagation(); 
-                    toggleLike(imgData.id, likeSection); 
+                    await toggleLike(imgData.id, likeSection); 
                 };
                 
                 const viewsDiv = document.createElement('div');
@@ -694,11 +693,11 @@
 
     // --- LIKE LOGIC ---
     async function toggleLike(imageId, likeSectionElem) {
-        const today = new Date().toISOString().slice(0, 10);
+        const likerId = currentUser ? currentUser.uid : anonymousUserId;
         const likes = JSON.parse(localStorage.getItem('imageLikes') || '{}');
-        if (likes[imageId] === today) return; // Already liked today
+        if (likes[imageId] === likerId) return; // Already liked by this user
 
-        likes[imageId] = today;
+        likes[imageId] = likerId;
         localStorage.setItem('imageLikes', JSON.stringify(likes));
 
         const imageRef = doc(db, "images", imageId);
@@ -706,9 +705,11 @@
             await runTransaction(db, async (transaction) => {
                 const imageDoc = await transaction.get(imageRef);
                 if (!imageDoc.exists()) throw "Document does not exist!";
-                const likesArr = imageDoc.data().likes || [];
-                likesArr.push('anon_' + today); // Use a dummy value for anonymous like
-                transaction.update(imageRef, { likes: likesArr });
+                let likesArr = imageDoc.data().likes || [];
+                if (!likesArr.includes(likerId)) {
+                    likesArr.push(likerId);
+                    transaction.update(imageRef, { likes: likesArr });
+                }
             });
         } catch (e) {
             console.error("Like transaction failed: ", e);
