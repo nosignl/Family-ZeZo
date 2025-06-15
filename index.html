@@ -114,9 +114,22 @@
         .uploader-info-text .name { font-size: 0.9em; font-weight: bold; text-shadow: 1px 1px 3px black; }
         .uploader-info-text .time-ago { font-size: 0.75em; color: #bbb; }
         .like-section { display: flex; align-items: center; gap: 5px; font-size: 1em; cursor: pointer; padding: 5px; border-radius: 5px; transition: color .2s; }
-        .like-section .fa-heart { color: #ddd; transition: color 0.2s; }
-        .like-section.liked .fa-heart { color: #e53e3e; }
-
+        .like-section .fa-heart {
+    color: #ddd;
+    transition: color 0.2s, transform 0.2s;
+}
+.like-section.liked .fa-heart {
+    color: #e53e3e;
+}
+.like-section.animate-like .fa-heart {
+    animation: heartPop 0.5s;
+}
+@keyframes heartPop {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.4); }
+    60% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
         .image-controls { position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 8px; opacity: 0; transition: opacity 0.3s; }
         .screenshot-item:hover .image-controls { opacity: 1; }
         .control-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.1em; padding: 5px; border-radius: 5px; transition: background 0.2s, color 0.2s; }
@@ -556,7 +569,33 @@
                 img.alt = 'Minecraft Screenshot';
                 img.className = 'main-img';
                 img.loading = 'lazy';
-                img.addEventListener('click', () => openLightbox(imgData.imageUrl, imgData.id));
+                img.addEventListener('click', async () => {
+                    // Get unique viewer key: user id or IP for anonymous
+                    let viewerId = currentUser ? currentUser.uid : null;
+                    if (!viewerId) {
+                        // Get IP from localStorage or fetch if not present
+                        viewerId = localStorage.getItem('viewer_ip');
+                        if (!viewerId) {
+                            try {
+                                const ipRes = await fetch("https://ipapi.co/json/");
+                                if (ipRes.ok) {
+                                    const ipData = await ipRes.json();
+                                    viewerId = ipData.ip;
+                                    localStorage.setItem('viewer_ip', viewerId);
+                                }
+                            } catch (e) {
+                                viewerId = 'unknown_ip';
+                            }
+                        }
+                    }
+                    const viewKey = `viewed_${imgData.id}_${viewerId}`;
+                    if (!localStorage.getItem(viewKey)) {
+                        const imageRef = doc(db, "images", imgData.id);
+                        updateDoc(imageRef, { views: increment(1) }).catch(() => {});
+                        localStorage.setItem(viewKey, '1');
+                    }
+                    openLightbox(imgData.imageUrl, imgData.id);
+                });
 
                 const uploaderDiv = document.createElement('div');
                 uploaderDiv.className = 'uploader-info';
@@ -577,7 +616,10 @@
                 if (imgData.likes?.includes(likerId)) {
                     likeSection.classList.add('liked');
                 }
-                likeSection.onclick = (e) => { e.stopPropagation(); toggleLike(imgData.id); };
+                likeSection.onclick = (e) => { 
+                    e.stopPropagation(); 
+                    toggleLike(imgData.id, likeSection); 
+                };
                 
                 const viewsDiv = document.createElement('div');
                 viewsDiv.className = 'views-section';
@@ -651,7 +693,7 @@
     }
 
     // --- LIKE LOGIC ---
-    async function toggleLike(imageId) {
+    async function toggleLike(imageId, likeSectionElem) {
         const today = new Date().toISOString().slice(0, 10);
         const likes = JSON.parse(localStorage.getItem('imageLikes') || '{}');
         if (likes[imageId] === today) return; // Already liked today
@@ -670,6 +712,11 @@
             });
         } catch (e) {
             console.error("Like transaction failed: ", e);
+        }
+        // Animation
+        if (likeSectionElem) {
+            likeSectionElem.classList.add('liked', 'animate-like');
+            setTimeout(() => likeSectionElem.classList.remove('animate-like'), 500);
         }
         renderPage(); // Update UI
     }
