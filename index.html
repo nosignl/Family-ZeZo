@@ -562,10 +562,9 @@
                 img.alt = 'Minecraft Screenshot';
                 img.className = 'main-img';
                 img.loading = 'lazy';
-                img.addEventListener('click', () => {
-                    // Always increment view on click
+                img.addEventListener('click', async () => {
                     const imageRef = doc(db, "images", imgData.id);
-                    updateDoc(imageRef, { views: increment(1) }).catch(() => {});
+                    await updateDoc(imageRef, { views: increment(1) }).catch(() => {});
                     openLightbox(imgData.imageUrl, imgData.id);
                 });
 
@@ -681,7 +680,7 @@
         } catch (e) {
             console.error("Like transaction failed: ", e);
         }
-        renderPage(); // Update UI
+        // No need to call renderPage(); Firestore onSnapshot will update UI
     }
 
     // --- PAGINATION LOGIC ---
