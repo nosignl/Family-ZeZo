@@ -562,9 +562,7 @@
                 img.alt = 'Minecraft Screenshot';
                 img.className = 'main-img';
                 img.loading = 'lazy';
-                img.addEventListener('click', async () => {
-                    const imageRef = doc(db, "images", imgData.id);
-                    await updateDoc(imageRef, { views: increment(1) }).catch(() => {});
+                img.addEventListener('click', () => {
                     openLightbox(imgData.imageUrl, imgData.id);
                 });
 
@@ -675,12 +673,16 @@
                 if (!likesArr.includes(likerId)) {
                     likesArr.push(likerId);
                     transaction.update(imageRef, { likes: likesArr });
+                } else {
+                    // Uncomment this block if you want to allow unliking:
+                    // likesArr = likesArr.filter(id => id !== likerId);
+                    // transaction.update(imageRef, { likes: likesArr });
                 }
             });
         } catch (e) {
             console.error("Like transaction failed: ", e);
         }
-        // No need to call renderPage(); Firestore onSnapshot will update UI
+        // UI will update automatically via Firestore onSnapshot
     }
 
     // --- PAGINATION LOGIC ---
