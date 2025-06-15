@@ -694,12 +694,6 @@
     // --- LIKE LOGIC ---
     async function toggleLike(imageId, likeSectionElem) {
         const likerId = currentUser ? currentUser.uid : anonymousUserId;
-        const likes = JSON.parse(localStorage.getItem('imageLikes') || '{}');
-        if (likes[imageId] === likerId) return; // Already liked by this user
-
-        likes[imageId] = likerId;
-        localStorage.setItem('imageLikes', JSON.stringify(likes));
-
         const imageRef = doc(db, "images", imageId);
         try {
             await runTransaction(db, async (transaction) => {
