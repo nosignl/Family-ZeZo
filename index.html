@@ -557,17 +557,6 @@
                 img.className = 'main-img';
                 img.loading = 'lazy';
                 img.addEventListener('click', () => openLightbox(imgData.imageUrl, imgData.id));
-                img.addEventListener('mouseenter', () => {
-                    // Use user ID if logged in, otherwise persistent anonymous ID
-                    const viewerId = currentUser ? currentUser.uid : anonymousUserId;
-                    const viewKey = `viewed_${imgData.id}_${viewerId}`;
-                    if (!localStorage.getItem(viewKey)) {
-                        // Increment views in Firestore
-                        const imageRef = doc(db, "images", imgData.id);
-                        updateDoc(imageRef, { views: increment(1) }).catch(() => {});
-                        localStorage.setItem(viewKey, '1');
-                    }
-                });
 
                 const uploaderDiv = document.createElement('div');
                 uploaderDiv.className = 'uploader-info';
