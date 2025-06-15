@@ -637,14 +637,32 @@
         lightboxImg.src = src;
         lightbox.classList.add('visible');
         resetZoom();
-        // Increment view count in Firestore EVERY TIME lightbox is opened
+
         if (imgId) {
-            const imageRef = doc(db, "images", imgId);
-            // Ensure 'views' field exists or is created, then increment
-            updateDoc(imageRef, { views: increment(1) })
-                .catch((error) => {
-                    console.error("Error updating view count: ", error);
-                });
+            // Determine the viewer's unique ID (logged-in user or anonymous)
+            const viewerId = currentUser ? currentUser.uid : anonymousUserId;
+            if (!viewerId) { // Should not happen if anonymousUserId is always set
+                console.error("Cannot track view: No viewerId available.");
+                return;
+            }
+
+            const viewKey = `viewed_${imgId}_by_${viewerId}`;
+
+            // Check if this user has already viewed this specific image
+            if (!localStorage.getItem(viewKey)) {
+                // If not viewed yet, increment view count in Firestore
+                const imageRef = doc(db, "images", imgId);
+                updateDoc(imageRef, { views: increment(1) })
+                    .then(() => {
+                        // Mark as viewed in localStorage for this user and this image
+                        localStorage.setItem(viewKey, 'true');
+                    })
+                    .catch((error) => {
+                        console.error("Error updating view count: ", error);
+                    });
+            } else {
+                // console.log(`Image ${imgId} already viewed by ${viewerId}`);
+            }
         }
     }
     function closeLightbox() { lightbox.classList.remove('visible'); lightboxImg.src = ''; }
