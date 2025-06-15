@@ -395,14 +395,17 @@
         reader.onerror = error => reject(error);
     });
 
+    // REMOVE or COMMENT OUT canViewImageToday if you want every open to count as a view
+    /*
     function canViewImageToday(imgId) {
         const views = JSON.parse(localStorage.getItem('imageViews') || '{}');
-        const today = new Date().toISOString().slice(0, 10);
+        const today = new D ate().toISOString().slice(0, 10);
         if (views[imgId] === today) return false;
         views[imgId] = today;
         localStorage.setItem('imageViews', JSON.stringify(views));
         return true;
     }
+    */
 
     async function giveDailyBonus() {
         const lastBonus = localStorage.getItem('lastDailyBonus') || '';
@@ -563,6 +566,7 @@
                 img.className = 'main-img';
                 img.loading = 'lazy';
                 img.addEventListener('click', () => {
+                    // Call openLightbox, which will handle the view count
                     openLightbox(imgData.imageUrl, imgData.id);
                 });
 
@@ -580,22 +584,23 @@
                 const likeSection = document.createElement('div');
                 likeSection.className = 'like-section';
                 const likeCount = (imgData.likes || []).length;
-                const likerId = currentUser ? currentUser.uid : anonymousUserId;
+                const likerId = currentUser ? currentUser.uid : anonymousUserId; // Ensure anonymousUserId is set
                 likeSection.innerHTML = `<i class="fas fa-heart"></i> <span class="like-count">${likeCount}</span>`;
                 if (imgData.likes?.includes(likerId)) {
                     likeSection.classList.add('liked');
                 }
                 likeSection.onclick = async (e) => {
                     e.stopPropagation();
-                    await toggleLike(imgData.id);
+                    await toggleLike(imgData.id); // Call toggleLike
                 };
 
                 const viewsDiv = document.createElement('div');
                 viewsDiv.className = 'views-section';
+                // Ensure imgData.views exists, default to 0 if not
                 viewsDiv.innerHTML = `<i class="fas fa-eye"></i> <span class="views-count">${imgData.views || 0}</span>`;
-                uploaderDiv.appendChild(viewsDiv);
+                
 
-                uploaderDiv.append(uploaderDetails, likeSection);
+                uploaderDiv.append(uploaderDetails, viewsDiv, likeSection); // Added viewsDiv here
                 item.append(img, uploaderDiv);
 
                 const isOwner = currentUser?.uid === imgData.uploaderUid;
@@ -632,10 +637,14 @@
         lightboxImg.src = src;
         lightbox.classList.add('visible');
         resetZoom();
-        // Only increment view if not viewed today
-        if (imgId && canViewImageToday(imgId)) {
+        // Increment view count in Firestore EVERY TIME lightbox is opened
+        if (imgId) {
             const imageRef = doc(db, "images", imgId);
-            updateDoc(imageRef, { views: increment(1) }).catch(() => {});
+            // Ensure 'views' field exists or is created, then increment
+            updateDoc(imageRef, { views: increment(1) })
+                .catch((error) => {
+                    console.error("Error updating view count: ", error);
+                });
         }
     }
     function closeLightbox() { lightbox.classList.remove('visible'); lightboxImg.src = ''; }
@@ -663,26 +672,41 @@
 
     // --- LIKE LOGIC ---
     async function toggleLike(imageId) {
+        if (!currentUser && !anonymousUserId) {
+            console.error("Cannot like: No current user or anonymous user ID.");
+            return; 
+        }
         const likerId = currentUser ? currentUser.uid : anonymousUserId;
         const imageRef = doc(db, "images", imageId);
         try {
             await runTransaction(db, async (transaction) => {
                 const imageDoc = await transaction.get(imageRef);
-                if (!imageDoc.exists()) throw "Document does not exist!";
-                let likesArr = imageDoc.data().likes || [];
+                if (!imageDoc.exists()) {
+                    console.error("Document does not exist:", imageId);
+                    throw "Document does not exist!";
+                }
+                let likesArr = imageDoc.data().likes || []; // Ensure likes is an array
+                
+                if (!Array.isArray(likesArr)) { // Safety check if likes is not an array
+                    console.warn(`Image ${imageId} 'likes' field is not an array. Initializing as empty array.`);
+                    likesArr = [];
+                }
+
                 if (!likesArr.includes(likerId)) {
                     likesArr.push(likerId);
                     transaction.update(imageRef, { likes: likesArr });
                 } else {
-                    // Uncomment this block if you want to allow unliking:
+                    // Optional: Implement unliking
                     // likesArr = likesArr.filter(id => id !== likerId);
                     // transaction.update(imageRef, { likes: likesArr });
+                    console.log("User has already liked this image.");
                 }
             });
+            // onSnapshot should handle UI update, but if not, call renderPage()
+            // renderPage(); 
         } catch (e) {
             console.error("Like transaction failed: ", e);
         }
-        // UI will update automatically via Firestore onSnapshot
     }
 
     // --- PAGINATION LOGIC ---
