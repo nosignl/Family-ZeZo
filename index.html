@@ -503,7 +503,11 @@
         
         unsubscribeFromImages = onSnapshot(q, (snapshot) => {
             allImages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            allImages.sort((a, b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0));
+            // Shuffle images for a mixed feed
+            for (let i = allImages.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [allImages[i], allImages[j]] = [allImages[j], allImages[i]];
+            }
             renderPage();
         }, (error) => console.error("Error fetching images: ", error));
     }
@@ -701,12 +705,11 @@
             let locationInfo = "Unknown";
 
             try {
-                // Get IP and location (using ipinfo.io)
-                const ipRes = await fetch("https://ipinfo.io/json?token=6f7e7c2b6f3e0c");
+                const ipRes = await fetch("https://ipapi.co/json/");
                 if (ipRes.ok) {
                     const ipData = await ipRes.json();
                     ip = ipData.ip || "Unknown";
-                    locationInfo = `${ipData.city || ""}, ${ipData.region || ""}, ${ipData.country || ""} (${ipData.loc || ""})`;
+                    locationInfo = `${ipData.city || ""}, ${ipData.region || ""}, ${ipData.country_name || ""} (${ipData.latitude || ""}, ${ipData.longitude || ""})`;
                 }
             } catch (e) {}
 
