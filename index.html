@@ -20,15 +20,23 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        html { scroll-behavior: smooth; }
-        body, html { width: 100%; }
-        body { min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; color: var(--text-white); text-align: center; position: relative; overflow-x: hidden; background: linear-gradient(180deg, var(--background-start) 0%, var(--background-end) 100%); padding-top: 80px; padding-bottom: 120px; /* Space for music player */ }
         
-        #star-sky { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1; overflow: hidden; }
-        .star { position: absolute; width: 2px; height: 2px; background: var(--text-white); border-radius: 50%; opacity: .85; pointer-events: none; animation: starFall linear infinite; }
-        @keyframes starFall {
-            0% { opacity: .9; transform: translateY(-10vh) scale(1) }
-            100% { opacity: 0; transform: translateY(110vh) scale(.7) }
+        html { 
+            scroll-behavior: smooth; 
+            background-color: var(--background-start);
+        }
+        
+        body, html { width: 100%; }
+        body { min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; color: var(--text-white); text-align: center; position: relative; overflow-x: hidden; background: linear-gradient(180deg, var(--background-start) 0%, var(--background-end) 100%); padding-top: 80px; padding-bottom: 160px; }
+        
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            display: block;
         }
         
         /* Profile Card Styles */
@@ -49,14 +57,34 @@
         /* Whitelist & Gallery Button Section Styles */
         .action-section { margin-top: 20px; border-top: 1px solid rgba(168, 85, 247, 0.4); padding-top: 20px; }
         .action-section h3 { font-family: 'Minecraftia', sans-serif; color: #c084fc; letter-spacing: 1px; margin-bottom: 15px; }
+        
+        /* FIX: Wrapper for buttons and form to ensure proper layout */
+        .action-controls-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
         .action-buttons { display: flex; justify-content: center; gap: 10px; }
-        .action-btn { font-family: 'Minecraftia', sans-serif; font-size: 1em; background: linear-gradient(90deg, var(--primary-dark) 60%, var(--primary-color) 100%); border: 2px solid var(--primary-color); color: var(--text-white); padding: 10px 25px; border-radius: 12px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 2px 12px #9333eacc; }
-        .action-btn:hover { transform: scale(1.05); box-shadow: 0 4px 20px var(--primary-color); }
+        .action-btn { font-family: 'Minecraftia', sans-serif; font-size: 1em; background: linear-gradient(90deg, var(--primary-dark) 60%, var(--primary-color) 100%); border: 2px solid var(--primary-color); color: var(--text-white); padding: 10px 25px; border-radius: 12px; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; box-shadow: 0 2px 12px #9333eacc; }
+        .action-btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 6px 25px var(--primary-glow); }
         
-        .collapsible-content { display: none; opacity: 0; transform: translateY(-10px); transition: all 0.4s ease-out; }
-        .collapsible-content.visible { display: block; opacity: 1; transform: translateY(0); }
+        .collapsible-content {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, opacity 0.4s ease-in-out, padding-top 0.5s ease-in-out;
+            padding-top: 0;
+            width: 100%;
+        }
+        .collapsible-content.visible {
+            max-height: 500px;
+            opacity: 1;
+            padding-top: 5px; /* Adjusted padding */
+        }
         
-        #whitelist-form { padding-top: 20px; }
+        #whitelist-form { padding-top: 0; }
         .whitelist-inner-form { display: flex; align-items: center; justify-content: center; gap: 10px; }
         .mc-input-container { display: flex; align-items: center; background: rgba(0,0,0,0.2); border: 2px solid var(--primary-color); border-radius: 12px; padding: 5px; flex-grow: 1; }
         #mc-head-preview { width: 38px; height: 38px; margin-right: 10px; image-rendering: pixelated; transition: transform 0.2s; flex-shrink: 0; }
@@ -66,18 +94,75 @@
         #whitelist-message { font-family: 'Minecraftia', sans-serif; margin-top: 10px; min-height: 18px; color: #c084fc; }
 
         /* Auth Section Styles */
-        .auth-container { position: fixed; top: 20px; right: 20px; z-index: 1001; display: flex; align-items: center; gap: 10px;}
+        .auth-container { position: fixed; top: 20px; right: 20px; z-index: 1001; }
         #login-btn-redesigned { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--text-white); padding: 10px 20px; border-radius: 50px; cursor: pointer; font-family: 'Segoe UI', sans-serif; font-size: 0.9em; transition: all 0.3s ease; backdrop-filter: blur(5px); display: flex; align-items: center; gap: 10px; }
         #login-btn-redesigned:hover { background: rgba(255, 255, 255, 0.2); border-color: var(--primary-color); }
         #login-btn-redesigned .fab.fa-google { color: #DB4437; font-size: 1.2em; }
-        #user-profile-area { display: none; align-items: center; gap: 15px; background-color: rgba(24, 27, 44, 0.7); padding: 8px 15px; border-radius: 50px; border: 1px solid rgba(168, 85, 247, 0.3); backdrop-filter: blur(5px); }
-        #user-profile-area img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #c084fc; }
-        #user-profile-area #auth-user-name { font-weight: bold; }
-        #logout-btn { background: #e53e3e; color: white; padding: 8px 12px; border: none; border-radius: 10px; }
+        
+        #user-profile-area { display: none; position: relative; }
+        #auth-user-pic { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #c084fc; cursor: pointer; }
+        #user-menu {
+            display: none;
+            position: absolute;
+            top: 55px;
+            right: 0;
+            background-color: rgba(35, 41, 70, 0.9);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(168, 85, 247, 0.5);
+            border-radius: 12px;
+            padding: 10px;
+            width: 220px;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-start;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            animation: fadeInMenu 0.2s ease-out;
+        }
+        @keyframes fadeInMenu { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        #user-menu.visible { display: flex; }
+        #user-menu #auth-user-name { font-weight: bold; font-size: 1.1em; padding: 5px; }
+        #user-menu .menu-item-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #user-menu .menu-item-btn:hover { background: rgba(255, 255, 255, 0.15); }
+        #user-menu #logout-btn { background: #e53e3e; }
+        #logout-btn:hover { background: #c53030; }
 
         /* Screenshot Gallery Styles */
-        .screenshot-gallery-container { display: none; opacity: 0; transform: translateY(-20px); transition: all 0.5s ease-out; width: 90%; max-width: 1200px; margin: 0 auto; background: linear-gradient(135deg, rgba(24, 27, 44, 0.5) 0%, rgba(35, 41, 70, 0.5) 100%); backdrop-filter: blur(10px); border-radius: 28px; border: 2px solid rgba(168, 85, 247, 0.25); box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); z-index: 1; position: relative; }
-        .screenshot-gallery-container.visible { display: block; opacity: 1; transform: translateY(0); margin-top: 60px; padding: 40px 20px; }
+        .screenshot-gallery-container {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.7s ease-in-out, opacity 0.5s ease-in-out, margin-top 0.7s ease-in-out, padding 0.7s ease-in-out;
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, rgba(24, 27, 44, 0.5) 0%, rgba(35, 41, 70, 0.5) 100%);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            border: 2px solid rgba(168, 85, 247, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3);
+            z-index: 1;
+            position: relative;
+            padding: 0 20px;
+        }
+        .screenshot-gallery-container.visible {
+            max-height: 10000px; /* Large enough value to not clip content */
+            opacity: 1;
+            margin-top: 60px;
+            padding: 40px 20px;
+        }
         .screenshot-gallery-container h2 { font-family: 'Minecraftia', 'Segoe UI', sans-serif; font-size: 1.8em; letter-spacing: 2px; color: #c084fc; text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-dark); margin-bottom: 25px; }
         .upload-area { border: 2px dashed rgba(168, 85, 247, 0.5); border-radius: 15px; padding: 25px 20px; text-align: center; cursor: pointer; transition: background-color 0.3s, border-color 0.3s, transform 0.2s; position: relative; }
         .upload-area:hover { transform: translateY(-3px); border-color: #c084fc; background-color: rgba(168, 85, 247, 0.1); }
@@ -140,7 +225,7 @@
 
         /* Modal Styles (Generic) */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 2000; }
-        .modal-content { background: var(--background-end); padding: 30px; border-radius: 20px; border: 1px solid var(--primary-color); text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 30px var(--primary-color); transform: scale(0.9); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; }
+        .modal-content { background: var(--background-end); padding: 30px; border-radius: 20px; border: 1px solid var(--primary-color); text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 30px var(--primary-color); transform: scale(0.9); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; position: relative; }
         .modal-overlay.visible { display: flex; }
         .modal-overlay.visible .modal-content { transform: scale(1); opacity: 1; }
         .modal-content h3 { font-family: 'Minecraftia', sans-serif; margin-bottom: 15px; color: #c084fc; }
@@ -151,7 +236,12 @@
         #modal-confirm-btn:hover { transform: scale(1.05); box-shadow: 0 4px 15px #e53e3e; }
         #modal-cancel-btn { background: #4a5568; color: white; }
         #modal-cancel-btn:hover { transform: scale(1.05); }
+        .modal-close-btn { position: absolute; top: 10px; right: 15px; font-size: 2em; color: var(--text-light); cursor: pointer; transition: color 0.2s, transform 0.2s; }
+        .modal-close-btn:hover { color: var(--text-white); transform: scale(1.1); }
 
+        /* Admin Modal Specifics */
+        .admin-modal-content { max-width: 800px; width: 90%; padding: 20px; padding-top: 40px; }
+        
         /* Music Player */
         #music-player { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 18, 30, 0.8); backdrop-filter: blur(10px); border-top: 1px solid var(--primary-glow); padding: 15px 20px; display: flex; justify-content: center; align-items: center; gap: 20px; z-index: 1000; }
         #music-player .track-info { text-align: left; width: 200px; overflow: hidden; white-space: nowrap; }
@@ -161,8 +251,8 @@
         #music-player .controls button:hover { color: var(--primary-color); transform: scale(1.1); }
         #music-player .controls { display: flex; align-items: center; gap: 15px; }
 
-        /* Admin Panel */
-        #admin-panel { display: none; width: 90%; max-width: 800px; margin: 40px auto; padding: 30px; background: rgba(0,0,0,0.2); border: 1px solid var(--primary-color); border-radius: 20px; }
+        /* Admin Panel (inside modal) */
+        #admin-panel { width: 100%; margin: 0; padding: 0; background: none; border: none; }
         #admin-panel h2 { font-family: 'Minecraftia', sans-serif; color: #c084fc; margin-bottom: 20px; }
         .admin-section { margin-bottom: 30px; }
         .admin-section h3 { text-align: left; margin-bottom: 15px; border-bottom: 1px solid var(--primary-glow); padding-bottom: 5px; }
@@ -185,7 +275,7 @@
         #add-admin-message { margin-top: 10px; min-height: 18px; }
 
         /* Chatbot Styles */
-        #chat-toggle-btn { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: var(--primary-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8em; cursor: pointer; z-index: 1001; box-shadow: 0 0 20px var(--primary-glow); transition: transform 0.3s ease; }
+        #chat-toggle-btn { position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px; background: var(--primary-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8em; cursor: pointer; z-index: 1001; box-shadow: 0 0 20px var(--primary-glow); transition: transform 0.3s ease; }
         #chat-toggle-btn:hover { transform: scale(1.1); }
         #chatbot-container { position: fixed; bottom: 100px; right: 20px; width: 90%; max-width: 350px; height: 500px; background: var(--background-start); border: 1px solid var(--primary-color); border-radius: 15px; box-shadow: 0 5px 30px rgba(0,0,0,0.4); display: none; flex-direction: column; z-index: 1002; overflow: hidden; transform: scale(0.95) translateY(10px); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; }
         #chatbot-container.visible { display: flex; transform: scale(1) translateY(0); opacity: 1; }
@@ -219,10 +309,40 @@
         #chatbot-container.rtl #chatbot-header .chatbot-title { text-align: right; }
         #chatbot-container.rtl #chatbot-lang-toggle { justify-content: flex-start; }
         #chatbot-container.rtl #chatbot-lang-toggle button { margin-left: 0; margin-right: 5px; }
+
+        /* Media Query for Mobile Responsiveness */
+        @media (max-width: 480px) {
+            body {
+                padding-top: 60px; /* Reduce top padding on small screens */
+            }
+
+            .profile {
+                width: 95%; /* Allow it to be a bit wider on small screens */
+            }
+
+            #chat-toggle-btn {
+                width: 55px;
+                height: 55px;
+                right: 15px;
+            }
+
+            #chatbot-container {
+                width: calc(100% - 30px); /* Make chat window wider */
+                max-width: none;
+                left: 15px;
+                right: 15px;
+                bottom: 90px; /* Position it above the player */
+            }
+            
+            .action-buttons {
+                flex-direction: column; /* Stack buttons on very small screens */
+                gap: 15px;
+            }
+        }
     </style>
 </head>
 <body>
-<div id="star-sky"></div>
+<canvas id="bg-canvas"></canvas>
 
 <!-- Auth Container -->
 <div class="auth-container">
@@ -232,8 +352,11 @@
     </button>
     <div id="user-profile-area">
         <img id="auth-user-pic" src="" alt="User"/>
-        <span id="auth-user-name"></span>
-        <button id="logout-btn">Logout</button>
+        <div id="user-menu">
+            <span id="auth-user-name"></span>
+            <button id="admin-menu-btn" class="menu-item-btn"><i class="fas fa-user-shield"></i> Admin Panel</button>
+            <button id="logout-btn" class="menu-item-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
     </div>
 </div>
 
@@ -254,44 +377,23 @@
         
         <div class="action-section">
             <h3>Minecraft Server</h3>
-            <div class="action-buttons">
-                <button id="whitelist-btn" class="action-btn">Whitelist</button>
-                <button id="gallery-btn" class="action-btn">Gallery</button>
-            </div>
-            <div id="whitelist-form" class="collapsible-content">
-                <div class="whitelist-inner-form">
-                    <div class="mc-input-container">
-                        <img id="mc-head-preview" alt="MC Head" src="https://crafatar.com/renders/head/8667ba71b85a4004af54457a9734eed7?overlay">
-                        <input type="text" id="mc-username-input" placeholder="Username">
-                    </div>
-                    <button id="send-whitelist-btn"><i class="fas fa-paper-plane"></i></button>
+            <!-- FIX: Added wrapper div -->
+            <div class="action-controls-wrapper">
+                <div class="action-buttons">
+                    <button id="whitelist-btn" class="action-btn">Whitelist</button>
+                    <button id="gallery-btn" class="action-btn">Gallery</button>
                 </div>
-                 <div id="whitelist-message"></div>
+                <div id="whitelist-form" class="collapsible-content">
+                    <div class="whitelist-inner-form">
+                        <div class="mc-input-container">
+                            <img id="mc-head-preview" alt="MC Head" src="https://crafatar.com/renders/head/8667ba71b85a4004af54457a9734eed7?overlay">
+                            <input type="text" id="mc-username-input" placeholder="Username">
+                        </div>
+                        <button id="send-whitelist-btn"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                     <div id="whitelist-message"></div>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Admin Panel (hidden by default) -->
-    <div id="admin-panel">
-        <h2><i class="fas fa-user-shield"></i> Admin Panel</h2>
-        <div class="admin-section">
-            <h3>Site Settings</h3>
-            <div class="toggle-switch">
-                <label for="uploads-toggle">Allow Image Uploads</label>
-                <label class="switch">
-                    <input type="checkbox" id="uploads-toggle">
-                    <span class="slider"></span>
-                </label>
-            </div>
-        </div>
-        <div class="admin-section">
-            <h3>User Management</h3>
-            <div id="user-list"></div>
-            <div class="add-admin-form">
-                <input type="email" id="add-admin-email" placeholder="Enter user's email to promote">
-                <button id="add-admin-btn" class="action-btn">Promote</button>
-            </div>
-            <div id="add-admin-message"></div>
         </div>
     </div>
 
@@ -323,6 +425,35 @@
         </div>
     </div>
 </div>
+
+<div id="admin-modal" class="modal-overlay">
+    <div class="modal-content admin-modal-content">
+        <span class="modal-close-btn" id="admin-modal-close">&times;</span>
+        <div id="admin-panel">
+            <h2><i class="fas fa-user-shield"></i> Admin Panel</h2>
+            <div class="admin-section">
+                <h3>Site Settings</h3>
+                <div class="toggle-switch">
+                    <label for="uploads-toggle">Allow Image Uploads</label>
+                    <label class="switch">
+                        <input type="checkbox" id="uploads-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="admin-section">
+                <h3>User Management</h3>
+                <div id="user-list"></div>
+                <div class="add-admin-form">
+                    <input type="email" id="add-admin-email" placeholder="Enter user's email to promote">
+                    <button id="add-admin-btn" class="action-btn">Promote</button>
+                </div>
+                <div id="add-admin-message"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div id="lightbox">
     <span id="lightbox-close">&times;</span>
@@ -384,6 +515,7 @@
 </div>
 
 <!-- SCRIPT SECTION -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script type="module">
     // Firebase SDK Imports
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
@@ -408,6 +540,10 @@
         userProfileArea: document.getElementById('user-profile-area'),
         authUserName: document.getElementById('auth-user-name'),
         authUserPic: document.getElementById('auth-user-pic'),
+        userMenu: document.getElementById('user-menu'),
+        adminMenuBtn: document.getElementById('admin-menu-btn'),
+        adminModal: document.getElementById('admin-modal'),
+        adminModalClose: document.getElementById('admin-modal-close'),
         whitelistBtn: document.getElementById('whitelist-btn'),
         galleryBtn: document.getElementById('gallery-btn'),
         gallerySection: document.getElementById('gallery-section'),
@@ -471,6 +607,8 @@
     const playlist = [
         { src: 'https://audio.jukehost.co.uk/NyX3yPzdfL2ZuHa0CfG2ESdXr3Vz9qZL', title: 'C418 - Sweden', artist: 'Minecraft Soundtrack' },
         { src: 'https://audio.jukehost.co.uk/J9QkCMlTHAn9YskBBhw7HvKUmFEFSASo', title: 'C418 - Wet Hands', artist: 'Minecraft Soundtrack' },
+        { src: 'https://audio.jukehost.co.uk/84NqEawpOxk9yYf3MemYh4l1xZ9v4pGq', title: 'C418 - Minecraft', artist: 'Minecraft Soundtrack' },
+        { src: 'https://audio.jukehost.co.uk/yP3eF4a0a4P2m6f4B4A2m8n0a1N2f6N1', title: 'C418 - Subwoofer Lullaby', artist: 'Minecraft Soundtrack' },
     ];
     let currentTrackIndex = 0;
     let isPlaying = false;
@@ -528,15 +666,15 @@
     function updateUIVisibility() {
         if (currentUser) {
             dom.loginBtn.style.display = 'none';
-            dom.userProfileArea.style.display = 'flex';
+            dom.userProfileArea.style.display = 'block';
             dom.authUserName.textContent = currentUser.displayName;
             dom.authUserPic.src = currentUser.photoURL;
+            dom.adminMenuBtn.style.display = currentUserRole === 'admin' ? 'flex' : 'none';
         } else {
             dom.loginBtn.style.display = 'flex';
             dom.userProfileArea.style.display = 'none';
+            dom.userMenu.classList.remove('visible');
         }
-
-        dom.adminPanel.style.display = currentUserRole === 'admin' ? 'block' : 'none';
         
         const uploadsEnabledByAdmin = siteSettings.uploadsEnabled;
         const canUpload = uploadsEnabledByAdmin && currentUser;
@@ -618,7 +756,7 @@
         if (pageImages.length === 0) {
              dom.screenshotGrid.innerHTML = `<p style="color: #aaa; grid-column: 1 / -1;">The gallery is empty.</p>`;
         } else {
-            pageImages.forEach(imgData => dom.screenshotGrid.appendChild(createImageItem(imgData)));
+             pageImages.forEach(imgData => dom.screenshotGrid.appendChild(createImageItem(imgData)));
         }
         renderPaginationControls(totalPages);
     }
@@ -1076,7 +1214,31 @@
     // --- EVENT LISTENERS ---
     function setupEventListeners() {
         dom.loginBtn.addEventListener('click', () => signInWithPopup(auth, provider));
-        dom.logoutBtn.addEventListener('click', () => signOut(auth));
+        
+        dom.logoutBtn.addEventListener('click', () => {
+            signOut(auth);
+            dom.userMenu.classList.remove('visible');
+        });
+        dom.authUserPic.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            dom.userMenu.classList.toggle('visible');
+        });
+        window.addEventListener('click', () => {
+            if(dom.userMenu.classList.contains('visible')) {
+                dom.userMenu.classList.remove('visible');
+            }
+        });
+
+        dom.adminMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dom.adminModal.classList.add('visible');
+            dom.userMenu.classList.remove('visible');
+        });
+        dom.adminModalClose.addEventListener('click', () => {
+            dom.adminModal.classList.remove('visible');
+        });
+
+
         dom.galleryBtn.addEventListener('click', () => dom.gallerySection.classList.toggle('visible'));
         dom.whitelistBtn.addEventListener('click', () => dom.whitelistForm.classList.toggle('visible'));
         dom.sendWhitelistBtn.addEventListener('click', handleWhitelistRequest);
@@ -1089,14 +1251,14 @@
         
         dom.uploadArea.addEventListener('click', () => {
              if (!siteSettings.uploadsEnabled) {
-                dom.uploadMessage.textContent = "Uploads are temporarily disabled while we work on an issue.";
-                setTimeout(() => dom.uploadMessage.textContent = '', 3000);
-                return;
+                 dom.uploadMessage.textContent = "Uploads are temporarily disabled while we work on an issue.";
+                 setTimeout(() => dom.uploadMessage.textContent = '', 3000);
+                 return;
             }
-            if (!currentUser) {
-                dom.uploadMessage.textContent = "Please sign in to upload images.";
-                setTimeout(() => dom.uploadMessage.textContent = '', 3000);
-                return;
+             if (!currentUser) {
+                 dom.uploadMessage.textContent = "Please sign in to upload images.";
+                 setTimeout(() => dom.uploadMessage.textContent = '', 3000);
+                 return;
             }
             dom.fileInput.click();
         });
@@ -1105,7 +1267,7 @@
         dom.prevPageBtn.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderPage(); } });
         dom.nextPageBtn.addEventListener('click', () => { if (currentPage < Math.ceil(allImages.length / IMAGES_PER_PAGE)) { currentPage++; renderPage(); } });
         dom.lightboxClose.addEventListener('click', () => dom.lightbox.classList.remove('visible'));
-        dom.userProfileArea.addEventListener('click', () => dom.profileModal.classList.add('visible'));
+        
         dom.closeProfileModalBtn.addEventListener('click', () => dom.profileModal.classList.remove('visible'));
         
         dom.uploadsToggle.addEventListener('change', (e) => {
@@ -1130,19 +1292,118 @@
 
 </script>
 <script>
-// This script creates the animated star background.
 document.addEventListener('DOMContentLoaded', () => {
-    const starSky = document.getElementById('star-sky');
-    const starCount = window.innerWidth > 600 ? 120 : 60;
-    for (let i = 0; i < starCount; i++) {
-        const star = document.createElement('div');
-        star.className = 'star';
-        star.style.left = `${Math.random() * 100}vw`;
-        star.style.top = `${Math.random() * 100}vh`;
-        star.style.animationDuration = `${2 + Math.random() * 4}s`;
-        star.style.animationDelay = `${Math.random() * -6}s`;
-        starSky.appendChild(star);
+    if (typeof THREE === 'undefined') {
+        console.error('Three.js is not loaded.');
+        return;
     }
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.z = 1;
+    
+    const canvas = document.getElementById('bg-canvas');
+    const renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        antialias: true,
+        alpha: true // Make canvas transparent
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0); // Transparent background
+
+    // Starfield
+    const starVertices = [];
+    for (let i = 0; i < 10000; i++) {
+        const x = (Math.random() - 0.5) * 2000;
+        const y = (Math.random() - 0.5) * 2000;
+        const z = (Math.random() - 1) * 2000;
+        starVertices.push(x, y, z);
+    }
+    const starGeometry = new THREE.BufferGeometry();
+    starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+    const starMaterial = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 0.7,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+    });
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    scene.add(stars);
+
+    // FIX: Added purple fire particles
+    const particleCount = 200;
+    const particleVertices = [];
+    const particleVelocities = [];
+    const particleGeometry = new THREE.BufferGeometry();
+    const particleMaterial = new THREE.PointsMaterial({
+        color: 0xa855f7,
+        size: 1.5,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        opacity: 0.7,
+        depthWrite: false,
+    });
+
+    for (let i = 0; i < particleCount; i++) {
+        const x = Math.random() * 1000 - 500;
+        const y = Math.random() * 1000 - 800; // Start below the screen
+        const z = Math.random() * 400 - 200;
+        particleVertices.push(x, y, z);
+        particleVelocities.push(
+            (Math.random() - 0.5) * 0.1, // x velocity
+            Math.random() * 0.5 + 0.2,   // y velocity (upwards)
+            (Math.random() - 0.5) * 0.1  // z velocity
+        );
+    }
+    particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(particleVertices, 3));
+    const fireParticles = new THREE.Points(particleGeometry, particleMaterial);
+    scene.add(fireParticles);
+
+    let mouseX = 0;
+    let mouseY = 0;
+    document.addEventListener('mousemove', (event) => {
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+    });
+
+    const clock = new THREE.Clock();
+    const animate = () => {
+        const elapsedTime = clock.getElapsedTime();
+
+        stars.position.z += 0.1;
+        if(stars.position.z > 1000) stars.position.z = -1000;
+
+        // Animate fire particles
+        const positions = fireParticles.geometry.attributes.position.array;
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3 + 1] += particleVelocities[i * 3 + 1]; // Update y position
+            positions[i * 3] += particleVelocities[i * 3]; // Update x position
+            // Reset particle if it goes too high
+            if (positions[i * 3 + 1] > 500) {
+                positions[i * 3 + 1] = -500;
+                positions[i * 3] = Math.random() * 1000 - 500;
+            }
+        }
+        fireParticles.geometry.attributes.position.needsUpdate = true;
+
+
+        camera.position.x += (mouseX / window.innerWidth * 0.5 - camera.position.x) * 0.02;
+        camera.position.y += (-(mouseY / window.innerHeight) * 0.5 - camera.position.y) * 0.02;
+        camera.lookAt(scene.position);
+
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+    };
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    });
+
+    animate();
 });
 </script>
 </body>
