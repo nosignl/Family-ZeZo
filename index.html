@@ -58,7 +58,6 @@
         .action-section { margin-top: 20px; border-top: 1px solid rgba(168, 85, 247, 0.4); padding-top: 20px; }
         .action-section h3 { font-family: 'Minecraftia', sans-serif; color: #c084fc; letter-spacing: 1px; margin-bottom: 15px; }
         
-        /* FIX: Wrapper for buttons and form to ensure proper layout */
         .action-controls-wrapper {
             display: flex;
             flex-direction: column;
@@ -81,7 +80,7 @@
         .collapsible-content.visible {
             max-height: 500px;
             opacity: 1;
-            padding-top: 5px; /* Adjusted padding */
+            padding-top: 5px;
         }
         
         #whitelist-form { padding-top: 0; }
@@ -92,6 +91,7 @@
         #send-whitelist-btn { flex-shrink: 0; padding: 12px 18px; background: linear-gradient(90deg, var(--primary-color) 60%, #c084fc 100%); border: none; border-radius: 12px; color: white; cursor: pointer; transition: transform 0.2s; font-size: 1.2em; }
         #send-whitelist-btn:hover { transform: scale(1.1); }
         #whitelist-message { font-family: 'Minecraftia', sans-serif; margin-top: 10px; min-height: 18px; color: #c084fc; }
+        #cooldown-timer { font-family: 'Minecraftia', sans-serif; margin-top: 10px; color: #fca5a5; }
 
         /* Auth Section Styles */
         .auth-container { position: fixed; top: 20px; right: 20px; z-index: 1001; }
@@ -158,7 +158,7 @@
             padding: 0 20px;
         }
         .screenshot-gallery-container.visible {
-            max-height: 10000px; /* Large enough value to not clip content */
+            max-height: 10000px;
             opacity: 1;
             margin-top: 60px;
             padding: 40px 20px;
@@ -256,8 +256,8 @@
         #admin-panel h2 { font-family: 'Minecraftia', sans-serif; color: #c084fc; margin-bottom: 20px; }
         .admin-section { margin-bottom: 30px; }
         .admin-section h3 { text-align: left; margin-bottom: 15px; border-bottom: 1px solid var(--primary-glow); padding-bottom: 5px; }
-        .toggle-switch { display: flex; align-items: center; gap: 10px; justify-content: space-between; }
-        .toggle-switch label { font-size: 1.1em; }
+        .toggle-switch, .admin-input-group { display: flex; align-items: center; gap: 10px; justify-content: space-between; margin-bottom: 10px; }
+        .toggle-switch label, .admin-input-group label { font-size: 1.1em; }
         .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
@@ -270,8 +270,8 @@
         .user-info { display: flex; align-items: center; gap: 10px; }
         .user-info img { width: 30px; height: 30px; border-radius: 50%; }
         .user-role-btn { font-size: 0.9em; padding: 5px 10px; }
-        .add-admin-form { display: flex; gap: 10px; margin-top: 10px; }
-        .add-admin-form input { flex-grow: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--primary-color); background: rgba(0,0,0,0.2); color: var(--text-white); }
+        .add-admin-form, .admin-input-group { display: flex; gap: 10px; margin-top: 10px; }
+        .add-admin-form input, .admin-input-group input { flex-grow: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--primary-color); background: rgba(0,0,0,0.2); color: var(--text-white); }
         #add-admin-message { margin-top: 10px; min-height: 18px; }
 
         /* Chatbot Styles */
@@ -377,7 +377,6 @@
         
         <div class="action-section">
             <h3>Minecraft Server</h3>
-            <!-- FIX: Added wrapper div -->
             <div class="action-controls-wrapper">
                 <div class="action-buttons">
                     <button id="whitelist-btn" class="action-btn">Whitelist</button>
@@ -392,6 +391,7 @@
                         <button id="send-whitelist-btn"><i class="fas fa-paper-plane"></i></button>
                     </div>
                      <div id="whitelist-message"></div>
+                     <div id="cooldown-timer"></div>
                 </div>
             </div>
         </div>
@@ -439,6 +439,20 @@
                         <input type="checkbox" id="uploads-toggle">
                         <span class="slider"></span>
                     </label>
+                </div>
+            </div>
+            <div class="admin-section">
+                <h3>Whitelist Settings</h3>
+                <div class="toggle-switch">
+                    <label for="whitelist-enabled-toggle">Whitelist System Enabled</label>
+                    <label class="switch">
+                        <input type="checkbox" id="whitelist-enabled-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="admin-input-group">
+                    <label for="cooldown-hours-input">Cooldown (Hours)</label>
+                    <input type="number" id="cooldown-hours-input" min="0" style="width: 80px;">
                 </div>
             </div>
             <div class="admin-section">
@@ -551,6 +565,7 @@
         mcUsernameInput: document.getElementById('mc-username-input'),
         sendWhitelistBtn: document.getElementById('send-whitelist-btn'),
         whitelistMessage: document.getElementById('whitelist-message'),
+        cooldownTimer: document.getElementById('cooldown-timer'),
         uploadArea: document.querySelector('.upload-area'),
         fileInput: document.getElementById('file-input'),
         uploadPrompt: document.getElementById('upload-prompt'),
@@ -575,6 +590,8 @@
         mcHeadPreview: document.getElementById('mc-head-preview'),
         adminPanel: document.getElementById('admin-panel'),
         uploadsToggle: document.getElementById('uploads-toggle'),
+        whitelistEnabledToggle: document.getElementById('whitelist-enabled-toggle'),
+        cooldownHoursInput: document.getElementById('cooldown-hours-input'),
         userList: document.getElementById('user-list'),
         addAdminEmailInput: document.getElementById('add-admin-email'),
         addAdminBtn: document.getElementById('add-admin-btn'),
@@ -595,20 +612,25 @@
 
     // --- Global State ---
     const ADMIN_EMAIL = "d4eners@gmail.com";
-    const WHITELIST_COOLDOWN = 3 * 60 * 60 * 1000; // 3 hours
     let currentUser = null;
     let currentUserRole = 'user';
     let allImages = [];
-    let siteSettings = { uploadsEnabled: true };
+    let siteSettings = { 
+        uploadsEnabled: true,
+        whitelistEnabled: true,
+        whitelistCooldownHours: 24 
+    };
     let unsubscribe = { images: null, settings: null };
     let currentPage = 1;
     const IMAGES_PER_PAGE = 12;
     let anonymousUserId = '';
+    let cooldownInterval = null;
     const playlist = [
         { src: 'https://audio.jukehost.co.uk/NyX3yPzdfL2ZuHa0CfG2ESdXr3Vz9qZL', title: 'C418 - Sweden', artist: 'Minecraft Soundtrack' },
         { src: 'https://audio.jukehost.co.uk/J9QkCMlTHAn9YskBBhw7HvKUmFEFSASo', title: 'C418 - Wet Hands', artist: 'Minecraft Soundtrack' },
         { src: 'https://audio.jukehost.co.uk/84NqEawpOxk9yYf3MemYh4l1xZ9v4pGq', title: 'C418 - Minecraft', artist: 'Minecraft Soundtrack' },
         { src: 'https://audio.jukehost.co.uk/yP3eF4a0a4P2m6f4B4A2m8n0a1N2f6N1', title: 'C418 - Subwoofer Lullaby', artist: 'Minecraft Soundtrack' },
+        { src: 'https://audio.jukehost.co.uk/TSOMnXEzYVHrqKQcAbgHM27yd4vT98zi', title: 'C418 - Aria Math', artist: 'Minecraft Soundtrack' },
     ];
     let currentTrackIndex = 0;
     let isPlaying = false;
@@ -697,20 +719,31 @@
         if (unsubscribe.images) unsubscribe.images();
         if (unsubscribe.settings) unsubscribe.settings();
 
+        const settingsRef = doc(db, "config", "settings");
+        // FIX: Changed to getDoc for non-admins to avoid permission errors
         if (currentUserRole === 'admin') {
-            const settingsRef = doc(db, "config", "settings");
             unsubscribe.settings = onSnapshot(settingsRef, (docSnap) => {
                 if (docSnap.exists()) {
-                    siteSettings = docSnap.data();
+                    siteSettings = { ...siteSettings, ...docSnap.data() };
                 } else {
-                    setDoc(settingsRef, { uploadsEnabled: true });
-                    siteSettings = { uploadsEnabled: true }; 
+                    setDoc(settingsRef, siteSettings);
                 }
                 dom.uploadsToggle.checked = siteSettings.uploadsEnabled;
+                dom.whitelistEnabledToggle.checked = siteSettings.whitelistEnabled;
+                dom.cooldownHoursInput.value = siteSettings.whitelistCooldownHours;
                 updateUIVisibility();
             }, (error) => {
-                console.error("Error fetching site settings:", error);
-                siteSettings = { uploadsEnabled: true };
+                console.error("Admin error fetching site settings:", error.message);
+                updateUIVisibility();
+            });
+        } else {
+            getDoc(settingsRef).then(docSnap => {
+                if (docSnap.exists()) {
+                    siteSettings = { ...siteSettings, ...docSnap.data() };
+                }
+                updateUIVisibility();
+            }).catch(error => {
+                console.log("Could not fetch remote settings, using defaults. This is expected for non-admins.");
                 updateUIVisibility();
             });
         }
@@ -889,17 +922,72 @@
 
     // --- WHITELIST LOGIC ---
     async function handleWhitelistRequest() {
-        const lastRequestTime = localStorage.getItem('lastWhitelistRequest');
-        if (lastRequestTime && (Date.now() - lastRequestTime < WHITELIST_COOLDOWN)) {
-            const timeLeft = Math.ceil((WHITELIST_COOLDOWN - (Date.now() - lastRequestTime)) / (1000 * 60));
-            dom.whitelistMessage.textContent = `Please wait ${timeLeft} more minutes.`;
+        if (!siteSettings.whitelistEnabled) {
+            dom.whitelistMessage.textContent = "Whitelist system is currently disabled.";
+            return;
+        }
+        if (!currentUser) {
+            dom.whitelistMessage.textContent = "Please sign in to send a request.";
             return;
         }
 
         const username = dom.mcUsernameInput.value.trim();
-        if (!username) { dom.whitelistMessage.textContent = "Please enter a username."; return; }
+        if (!username) {
+            dom.whitelistMessage.textContent = "Please enter a username.";
+            return;
+        }
 
+        if (currentUserRole === 'admin') {
+            sendRequest(username);
+            return;
+        }
+
+        const requestRef = doc(db, "whitelistRequests", currentUser.uid);
+        const requestDoc = await getDoc(requestRef);
+        const cooldownMs = siteSettings.whitelistCooldownHours * 60 * 60 * 1000;
+
+        if (requestDoc.exists()) {
+            const lastRequestTime = requestDoc.data().timestamp.toMillis();
+            const timeSince = Date.now() - lastRequestTime;
+
+            if (timeSince < cooldownMs) {
+                startCooldownTimer(cooldownMs - timeSince);
+                return;
+            }
+        }
+        
+        await sendRequest(username);
+        await setDoc(requestRef, { timestamp: serverTimestamp() });
+    }
+
+    function startCooldownTimer(msLeft) {
+        clearInterval(cooldownInterval);
+        let timeLeft = msLeft;
+
+        const updateTimer = () => {
+            if (timeLeft <= 0) {
+                clearInterval(cooldownInterval);
+                dom.cooldownTimer.textContent = "";
+                dom.sendWhitelistBtn.disabled = false;
+                return;
+            }
+
+            const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            dom.cooldownTimer.textContent = `Next request in: ${hours}h ${minutes}m ${seconds}s`;
+            dom.sendWhitelistBtn.disabled = true;
+            timeLeft -= 1000;
+        };
+
+        updateTimer();
+        cooldownInterval = setInterval(updateTimer, 1000);
+    }
+
+    async function sendRequest(username) {
         dom.whitelistMessage.textContent = "Sending...";
+        dom.sendWhitelistBtn.disabled = true;
         
         let ip = "Unknown";
         let locationInfo = "Unknown";
@@ -937,12 +1025,13 @@
             });
             if (!response.ok) throw new Error(`API error: ${response.status}`);
             dom.whitelistMessage.textContent = "Request sent successfully!";
-            localStorage.setItem('lastWhitelistRequest', Date.now());
             dom.mcUsernameInput.value = '';
         } catch (error) {
             console.error("Webhook error:", error);
             dom.whitelistMessage.textContent = "Webhook failed. Check URL.";
         }
+        
+        dom.sendWhitelistBtn.disabled = false;
         setTimeout(() => { dom.whitelistMessage.textContent = ''; }, 5000);
     }
     
@@ -1042,9 +1131,17 @@
     }
 
     // --- MUSIC PLAYER LOGIC ---
+    // FIX: Added error handling to audio playback
     function initMusicPlayer() {
         updateTrackDisplay();
         dom.audioPlayer.volume = 0.5;
+        dom.audioPlayer.addEventListener('error', (e) => {
+            console.error("Audio Player Error:", e);
+            dom.trackTitle.textContent = "Playback Error";
+            dom.trackArtist.textContent = "Could not load song.";
+            isPlaying = false;
+            dom.playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+        });
     }
 
     function updateTrackDisplay() {
@@ -1053,24 +1150,40 @@
         dom.trackArtist.textContent = track.artist;
     }
 
-    function playPauseTrack() {
+    async function playPauseTrack() {
         if (isPlaying) {
             dom.audioPlayer.pause();
             dom.playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            isPlaying = false;
         } else {
-            dom.audioPlayer.src = playlist[currentTrackIndex].src;
-            dom.audioPlayer.play();
-            dom.playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            try {
+                dom.audioPlayer.src = playlist[currentTrackIndex].src;
+                await dom.audioPlayer.play();
+                dom.playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                isPlaying = true;
+            } catch (error) {
+                console.error("Audio playback error:", error.name, error.message);
+                dom.trackTitle.textContent = "Error";
+                dom.trackArtist.textContent = "Could not load track";
+                isPlaying = false;
+            }
         }
-        isPlaying = !isPlaying;
     }
 
-    function changeTrack(direction) {
+    async function changeTrack(direction) {
         currentTrackIndex = (currentTrackIndex + direction + playlist.length) % playlist.length;
         updateTrackDisplay();
-        if(isPlaying) {
-            dom.audioPlayer.src = playlist[currentTrackIndex].src;
-            dom.audioPlayer.play();
+        if (isPlaying) {
+            try {
+                dom.audioPlayer.src = playlist[currentTrackIndex].src;
+                await dom.audioPlayer.play();
+            } catch (error) {
+                console.error("Audio playback error on track change:", error.name, error.message);
+                dom.trackTitle.textContent = "Error";
+                dom.trackArtist.textContent = "Could not load track";
+                isPlaying = false;
+                dom.playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
         }
     }
 
@@ -1270,10 +1383,16 @@
         
         dom.closeProfileModalBtn.addEventListener('click', () => dom.profileModal.classList.remove('visible'));
         
-        dom.uploadsToggle.addEventListener('change', (e) => {
-            const settingsRef = doc(db, "config", "settings");
-            updateDoc(settingsRef, { uploadsEnabled: e.target.checked });
+        const settingsRef = doc(db, "config", "settings");
+        dom.uploadsToggle.addEventListener('change', (e) => updateDoc(settingsRef, { uploadsEnabled: e.target.checked }));
+        dom.whitelistEnabledToggle.addEventListener('change', (e) => updateDoc(settingsRef, { whitelistEnabled: e.target.checked }));
+        dom.cooldownHoursInput.addEventListener('change', (e) => {
+            const hours = parseInt(e.target.value, 10);
+            if (!isNaN(hours) && hours >= 0) {
+                updateDoc(settingsRef, { whitelistCooldownHours: hours });
+            }
         });
+
         dom.userList.addEventListener('click', handleRoleChange);
         dom.addAdminBtn.addEventListener('click', addAdminByEmail);
 
@@ -1331,7 +1450,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const stars = new THREE.Points(starGeometry, starMaterial);
     scene.add(stars);
 
-    // FIX: Added purple fire particles
     const particleCount = 200;
     const particleVertices = [];
     const particleVelocities = [];
